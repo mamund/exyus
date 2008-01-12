@@ -123,7 +123,6 @@ namespace Exyus.Web
         {
             string method = ctx.Request.HttpMethod.ToLower();
             this.Context = ctx;
-            Caching.Cache ch = new Exyus.Caching.Cache();
 
             switch(method)
             {
