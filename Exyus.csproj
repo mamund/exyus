@@ -1,0 +1,85 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CF55C1AA-E8FE-4E9B-A14C-1CAA11ECE4AD}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Exyus</RootNamespace>
+    <AssemblyName>Exyus</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Data.SqlXml, Version=9.0.242.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="Mvp.Xml, Version=2.3.0.0, Culture=neutral, PublicKeyToken=6ead800d778c9b9f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\installs\mvp-xml\Mvp.Xml-2.3-Bin\Mvp.Xml.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Caching\Cache.cs" />
+    <Compile Include="Caching\CacheObject.cs" />
+    <Compile Include="Other\Constants.cs" />
+    <Compile Include="Other\ExyusRedirect.cs" />
+    <Compile Include="Other\Helper.cs" />
+    <Compile Include="Mime\MediaTypesAttribute.cs" />
+    <Compile Include="Mime\MimeParser.cs" />
+    <Compile Include="Security\Authentication.cs" />
+    <Compile Include="Security\ExyusIdentity.cs" />
+    <Compile Include="Security\ExyusPrincipal.cs" />
+    <Compile Include="Resources\StaticResource.cs" />
+    <Compile Include="Web\ExyusErrorModule.cs" />
+    <Compile Include="Resources\HtmlPostResource.cs" />
+    <Compile Include="Other\HttpCompressionModule.cs" />
+    <Compile Include="Resources\SqlXmlResource.cs" />
+    <Compile Include="Resources\XmlFileResource.cs" />
+    <Compile Include="Resources\XmlPageResource.cs" />
+    <Compile Include="Resources\XmlTemplateResource.cs" />
+    <Compile Include="Uri\UriPatternAttribute.cs" />
+    <Compile Include="Uri\UriPatternService.cs" />
+    <Compile Include="Web\ExyusResource.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Web\Requestor.cs" />
+    <Compile Include="Xml\ExyusResolver.cs" />
+    <Compile Include="Xml\SchemaValidator.cs" />
+    <Compile Include="Web\ExyusModule.cs" />
+    <Compile Include="Other\Utility.cs" />
+    <Compile Include="Xml\XHtmlValidator.cs" />
+    <Compile Include="Xml\XmlFileReader.cs" />
+    <Compile Include="Xml\XslTransformer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="docs\license.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
