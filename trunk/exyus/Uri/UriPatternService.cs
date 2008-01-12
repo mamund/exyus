@@ -123,9 +123,9 @@ namespace Exyus.Web
                                 }
                                 else
                                 {
-                                    ExyusResource h = (ExyusResource)ci.Invoke(new object[] { });
-                                    mtypes = new string[] { h.ContentType };
-                                    h = null;
+                                    WebResource wr = (WebResource)ci.Invoke(new object[] { });
+                                    mtypes = new string[] { wr.ContentType };
+                                    wr = null;
                                 }
 
                                 cacheUri.Add(url.ToLower(), mtypes);

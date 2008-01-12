@@ -21,7 +21,7 @@ using Exyus.Caching;
 namespace Exyus.Web
 {
     [MediaTypes("text/html")]
-    public class HtmlPostResource : ExyusResource
+    public class HtmlPostResource : WebResource
     {        
         Utility util = new Utility();
         Cache ch = new Cache();
@@ -72,7 +72,7 @@ namespace Exyus.Web
 
             try
             {
-                if (ch.CachedResourceIsValid((ExyusResource)this))
+                if (ch.CachedResourceIsValid((WebResource)this))
                     return;
 
                 // generate a new version
@@ -101,7 +101,7 @@ namespace Exyus.Web
                 }
 
                 // handle caching the resource
-                ch.CacheResource((ExyusResource)this, out_text);
+                ch.CacheResource((WebResource)this, out_text);
             }
             catch (HttpException hex)
             {

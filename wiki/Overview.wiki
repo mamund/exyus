@@ -2,10 +2,10 @@
 #labels Featured
 
 ==Summary==
-The *Exyus* engine is designed to make it relatively easy to build scalable read/write web applications while staying close to the prinicples of [http://en.wikipedia.org/wiki/Representational_State_Transfer REST]. The core of the *Exyus* engine is in two classes: [ExyusResource] and [WebClient]. The [ExyusResource] class is designed to handle incoming HTTP requests. The [WebClient] class is designed to make outgoing HTTP requests.
+The *Exyus* engine is designed to make it relatively easy to build scalable read/write web applications while staying close to the prinicples of [http://en.wikipedia.org/wiki/Representational_State_Transfer REST]. The core of the *Exyus* engine is in two classes: [WebResource] and [WebClient]. The [WebResource] class is designed to handle incoming HTTP requests. The [WebClient] class is designed to make outgoing HTTP requests.
 
 Programming with the *Exyus* engine requires the following:
-  * Define a Resource.
+  * Define a Resource using [WebResource] or one of it's sub-classes (see below).
   * Define one or more [UriPattern] elements that map to that resource.
   * Define one or more HTTP Methods that are allowed for that resource.
   * Define one or more [MediaType] elements that are supported by that resource.
@@ -13,7 +13,7 @@ Programming with the *Exyus* engine requires the following:
 
 In addition, many of the built-in Resource Classes require the definition of one or more [Transform_Documents Transform Documents] to handle validation and transformation of passed parameters, incoming requests, and outgoing responses. 
 
-In the initial release, *Exyus* provides the following Resource Classes:
+In the initial release, *Exyus* provides the following Resource Classes (all subclasses of the [Webresource] class:
   * [StaticResource] - Supports literal string and file-based read-only content.
   * [XmlFileResource] - Supports full read/write access to any file that can (ultimately) be transformed into a valid XML document (more on this later).
   * [SqlXmlResource] - Supports access to MS-SQL database that returns valid XML documents.

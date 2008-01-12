@@ -14,7 +14,7 @@ using Exyus.Caching;
 namespace Exyus.Web
 {
     [MediaTypes("text/xml")]
-    public class XmlFileResource : ExyusResource
+    public class XmlFileResource : WebResource
     {
         private Utility util = new Utility();
         private string rex_notfound = "not found";
@@ -166,7 +166,7 @@ namespace Exyus.Web
             try
             {
                 // see if we have a current copy
-                if(ch.CachedResourceIsValid((ExyusResource)this))
+                if(ch.CachedResourceIsValid((WebResource)this))
                     return;
 
                 // use regexp pattern to covert url into xml document
@@ -242,7 +242,7 @@ namespace Exyus.Web
                         throw new FileNotFoundException(string.Format(rex_notfound + " [{0}]", this.Context.Request.RawUrl.Replace(s_ext, "")));
                 }
 
-                ch.CacheResource((ExyusResource)this, util.FixEncoding(out_text));
+                ch.CacheResource((WebResource)this, util.FixEncoding(out_text));
             }
             catch (HttpException hex)
             {
