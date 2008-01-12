@@ -11,7 +11,7 @@ Programming with the *Exyus* engine requires the following:
   * Define one or more [MediaType] elements that are supported by that resource.
   * Define one or more dependent [CacheUri] elements that will be cleared when the resource is successfully updated.
 
-In addition, many of the built-in Resource Classes require the definition of one or more [Transform_Documents] to handle validation and transformation of passed parameters, incoming requests, and outgoing responses. 
+In addition, many of the built-in Resource Classes require the definition of one or more [Transform_Documents Transform Documents] to handle validation and transformation of passed parameters, incoming requests, and outgoing responses. 
 
 In the initial release, *Exyus* provides the following Resource Classes:
   * [StaticResource] - Supports literal string and file-based read-only content.
