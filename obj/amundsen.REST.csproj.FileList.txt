@@ -1,7 +1,0 @@
-obj\Debug\ResolveAssemblyReference.cache
-bin\Debug\amundsen.REST.dll
-bin\Debug\amundsen.REST.pdb
-obj\Debug\amundsen.REST.dll
-obj\Debug\amundsen.REST.pdb
-bin\Debug\Mvp.Xml.dll
-bin\Debug\Mvp.Xml.xml
