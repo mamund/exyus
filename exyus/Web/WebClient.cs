@@ -25,7 +25,14 @@ namespace Exyus.Web
         public long ResponseLength = 0;
 
         public WebClient() { }
-
+        public WebClient(NetworkCredential crendentials)
+        {
+            this.Credentials = crendentials;
+        }
+        public WebClient(string user, string password)
+        {
+            this.Credentials = new NetworkCredential(user, password);
+        }
         // method that makes the call
         public string Execute(string url)
         {

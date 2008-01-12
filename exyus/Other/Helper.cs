@@ -13,7 +13,7 @@ namespace Exyus
 {
     public class Helper
     {
-        public static string LoadUrl(string url)
+        public static string LoadFromUrl(string url)
         {
             return LoadUrl(url, "text/html");
         }
@@ -55,7 +55,7 @@ namespace Exyus
                     sr.Close();
                 }
 
-                // now put it in memory
+                // now put it in memory w/ callback to reload on change
                 HttpContext.Current.Cache.Add(
                     key,
                     content,
@@ -64,8 +64,6 @@ namespace Exyus
                     System.Web.Caching.Cache.NoSlidingExpiration,
                     System.Web.Caching.CacheItemPriority.Normal,
                     new CacheItemRemovedCallback(ReloadCacheFile)
-
-
                     );
             }
             return content;
