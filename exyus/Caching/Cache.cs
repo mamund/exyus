@@ -19,26 +19,26 @@ namespace Exyus.Caching
 
         public Cache() {}
 
-        public void CacheResource(Exyus.Web.ExyusResource handler, string content)
+        public void CacheResource(Exyus.Web.WebResource wr, string content)
         {
             // see if we should write a cached version
-            if (handler.MaxAge > 0 || handler.LocalMaxAge > 0)
+            if (wr.MaxAge > 0 || wr.LocalMaxAge > 0)
             {
                 CacheObject co = null;
-                co = PutCacheItem(handler.Context, content, handler.MaxAge, handler.LocalMaxAge, handler.ContentType);
+                co = PutCacheItem(wr.Context, content, wr.MaxAge, wr.LocalMaxAge, wr.ContentType);
 
                 // mark for caching
                 if (co != null)
                 {
                     // use expiration caching
                     if (co.Expires != DateTime.MinValue)
-                        handler.Expires = co.Expires;
+                        wr.Expires = co.Expires;
 
                     // use validation caching
-                    if (handler.UseValidationCaching == true)
+                    if (wr.UseValidationCaching == true)
                     {
-                        handler.EntityTag = string.Format("\"{0}\"", co.ETag);
-                        handler.LastModified = co.LastModified;
+                        wr.EntityTag = string.Format("\"{0}\"", co.ETag);
+                        wr.LastModified = co.LastModified;
                     }
                 }
             }
@@ -47,22 +47,22 @@ namespace Exyus.Caching
         }
 
         // return 304 *or* cache copy if possible
-        public bool CachedResourceIsValid(Exyus.Web.ExyusResource handler)
+        public bool CachedResourceIsValid(Exyus.Web.WebResource wr)
         {
             CacheObject co = null;
            
             // see if it exists in cache
-            co = GetCacheItem(handler.Context,handler.ContentType);
+            co = GetCacheItem(wr.Context,wr.ContentType);
 
             // check for not-modified
-            if (co != null && Return304(handler.Context,co))
+            if (co != null && Return304(wr.Context,co))
             {
-                handler.EntityTag = string.Format("\"{0}\"",co.ETag);
-                handler.Expires = co.Expires;
-                handler.LastModified = co.LastModified;
-                handler.StatusCode = HttpStatusCode.NotModified;
-                handler.ContentType = co.ContentType;
-                handler.Response = null;
+                wr.EntityTag = string.Format("\"{0}\"",co.ETag);
+                wr.Expires = co.Expires;
+                wr.LastModified = co.LastModified;
+                wr.StatusCode = HttpStatusCode.NotModified;
+                wr.ContentType = co.ContentType;
+                wr.Response = null;
 
                 return true;
             }
@@ -72,18 +72,18 @@ namespace Exyus.Caching
             {
                 // use expiration caching
                 if (co.Expires != DateTime.MinValue)
-                    handler.Expires = co.Expires;
+                    wr.Expires = co.Expires;
 
                 // use validation caching
-                if (handler.UseValidationCaching == true)
+                if (wr.UseValidationCaching == true)
                 {
-                    handler.EntityTag = string.Format("\"{0}\"",co.ETag);
-                    handler.LastModified = co.LastModified;
+                    wr.EntityTag = string.Format("\"{0}\"",co.ETag);
+                    wr.LastModified = co.LastModified;
                 }
 
-                handler.Response = util.FixEncoding(co.Payload);
-                handler.ContentType = co.ContentType;
-                handler.Context.Response.AppendHeader(Constants.hdr_ExyusCache, co.ETag);
+                wr.Response = util.FixEncoding(co.Payload);
+                wr.ContentType = co.ContentType;
+                wr.Context.Response.AppendHeader(Constants.hdr_ExyusCache, co.ETag);
 
                 return true;
             }

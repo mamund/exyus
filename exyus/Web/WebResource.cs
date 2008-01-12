@@ -10,7 +10,7 @@ using System.Diagnostics;
 
 namespace Exyus.Web
 {
-    public class ExyusResource : IHttpHandler
+    public class WebResource : IHttpHandler
     {
         #region private variables
         Utility util = new Utility();
@@ -112,7 +112,7 @@ namespace Exyus.Web
         #endregion
 
         #region base class implementation
-        public ExyusResource() { }
+        public WebResource() { }
 
         public bool IsReusable
         {

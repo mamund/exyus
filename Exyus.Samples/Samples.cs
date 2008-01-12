@@ -119,9 +119,9 @@ namespace Exyus.Samples
     {
         public svgHello()
         {
+
             this.ContentType = "image/svg+xml";
             this.Content = Helper.ReadFile("/xcs/content/samples/hello.svg");
         }
     }
-
 }
