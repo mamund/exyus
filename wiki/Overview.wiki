@@ -11,11 +11,11 @@ Programming with the *Exyus* engine requires the following:
   * Define one or more [MediaType] elements that are supported by that resource.
   * Define one or more dependent [CacheUri] elements that will be cleared when the resource is successfully updated.
 
-In addition, many of the built-in Resource Classes require the definition of one or more [Transform Documents] to handle validation and transformation of passed parameters, incoming requests, and outgoing responses. 
+In addition, many of the built-in Resource Classes require the definition of one or more [Transform_Documents] to handle validation and transformation of passed parameters, incoming requests, and outgoing responses. 
 
 In the initial release, *Exyus* provides the following Resource Classes:
   * [StaticResource] - Supports literal string and file-based read-only content.
   * [XmlFileResource] - Supports full read/write access to any file that can (ultimately) be transformed into a valid XML document (more on this later).
   * [SqlXmlResource] - Supports access to MS-SQL database that returns valid XML documents.
   * [XmlPageResource] - Supports producing typical XHTML pages either whole or via the [XmlTemplateResource].
-  * [XmlTemplateResource] - Supports partial-page generation. Can be used to build [XmlpageResource] output.
+  * [XmlTemplateResource] - Supports partial-page generation. Can be used to build [XmlPageResource] output.
