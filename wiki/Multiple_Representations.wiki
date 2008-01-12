@@ -1,7 +1,7 @@
 #summary Handling Multiple Representations of a Resource
 
 ==Quick summary==
-Exyus allows you to define more than one [ContentType Content-Type] for a Resource class. This allows you to provide multiple representations of the same server-side data. The number and type of content-types supported by Exyus is unlimited. This is all defined when you implement a Resource class.
+Exyus allows you to define more than one [MediaTypes Content-Type] for a Resource class. This allows you to provide multiple representations of the same server-side data. The number and type of content-types supported by Exyus is unlimited. This is all defined when you implement a Resource class.
 
 ==A simple example==
 For example, you can use the existing [StaticResource] class to define a resource that returns the current server time. Below is one that returns the results as plain text:
