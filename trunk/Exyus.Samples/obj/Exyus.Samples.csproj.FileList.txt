@@ -1,0 +1,10 @@
+obj\Debug\ResolveAssemblyReference.cache
+bin\Debug\Exyus.dll
+bin\Debug\Mvp.Xml.dll
+bin\Debug\Mvp.Xml.pdb
+bin\Debug\Mvp.Xml.xml
+bin\Debug\Exyus.pdb
+bin\Debug\Exyus.Samples.dll
+bin\Debug\Exyus.Samples.pdb
+obj\Debug\Exyus.Samples.dll
+obj\Debug\Exyus.Samples.pdb
