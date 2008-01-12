@@ -1,7 +1,6 @@
 #summary High-level introduction to the Exyus engine
 #labels Featured
 
-=Overview=
 ==Summary==
 The *Exyus* engine is designed to make it relatively easy to build scalable read/write web applications while staying close to the prinicples of [http://en.wikipedia.org/wiki/Representational_State_Transfer REST]. The core of the *Exyus* engine is in two classes: [ExyusResource] and [WebClient]. The [ExyusResource] class is designed to handle incoming HTTP requests. the [WebClient] class is designed to make outgoing HTTP requests.
 
