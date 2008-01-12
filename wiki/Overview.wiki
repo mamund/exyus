@@ -8,7 +8,7 @@ Programming with the *Exyus* engine requires the following:
   * Define a Resource using [WebResource] or one of it's sub-classes (see below).
   * Define one or more [UriPattern] elements that map to that resource.
   * Define one or more HTTP Methods that are allowed for that resource.
-  * Define one or more [MediaType] elements that are supported by that resource.
+  * Define one or more [MediaTypes] that are supported by that resource.
   * Define one or more dependent [CacheUri] elements that will be cleared when the resource is successfully updated.
 
 In addition, many of the built-in Resource Classes require the definition of one or more [Transform_Documents Transform Documents] to handle validation and transformation of passed parameters, incoming requests, and outgoing responses. 
