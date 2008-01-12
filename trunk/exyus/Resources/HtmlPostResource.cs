@@ -143,12 +143,12 @@ namespace Exyus.Web
             try
             {
                 // set up call
-                Requestor req = new Requestor();
+                WebClient wc = new WebClient();
                 ExyusPrincipal ep = (ExyusPrincipal)this.Context.User;
-                req.Credentials = new NetworkCredential(((ExyusIdentity)ep.Identity).Name, ((ExyusIdentity)ep.Identity).Password);
+                wc.Credentials = new NetworkCredential(((ExyusIdentity)ep.Identity).Name, ((ExyusIdentity)ep.Identity).Password);
 
                 // execute http call
-                out_text = req.Execute(
+                out_text = wc.Execute(
                     string.Format("{0}://{1}{2}",
                         this.Context.Request.Url.Scheme,
                         this.Context.Request.Url.DnsSafeHost,

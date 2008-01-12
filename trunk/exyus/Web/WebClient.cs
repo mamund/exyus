@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 
 namespace Exyus.Web
 {
-    public class Requestor
+    public class WebClient
     {
         // public properties
         public WebHeaderCollection RequestHeaders = new WebHeaderCollection();
@@ -24,7 +24,7 @@ namespace Exyus.Web
         public NetworkCredential Credentials = new NetworkCredential();
         public long ResponseLength = 0;
 
-        public Requestor() { }
+        public WebClient() { }
 
         // method that makes the call
         public string Execute(string url)
@@ -173,10 +173,10 @@ namespace Exyus.Web
         public void Execute()
         {
             Utility util = new Utility();
-            Requestor req = new Requestor();
-            req.RequestHeaders.Set(Constants.hdr_cache_control, "no-cache");
-            req.Credentials = util.GetSystemCredentials();
-            req.CookieCollection = this.CookieCollection;
+            WebClient wc = new WebClient();
+            wc.RequestHeaders.Set(Constants.hdr_cache_control, "no-cache");
+            wc.Credentials = util.GetSystemCredentials();
+            wc.CookieCollection = this.CookieCollection;
 
             for (int i = 0; i < Uri.Length; i++)
             {
@@ -185,14 +185,14 @@ namespace Exyus.Web
                 {
                     for (int j = 0; j < media.Length; j++)
                     {
-                        req.RequestHeaders.Set("Accept", media[j]);
-                        try {req.Execute(this.Uri[i], "head", media[j]);}
+                        wc.RequestHeaders.Set("Accept", media[j]);
+                        try {wc.Execute(this.Uri[i], "head", media[j]);}
                         catch (Exception ex) { }
                     }
                 }
                 else
                 {
-                    try {req.Execute(this.Uri[i], "head");}
+                    try {wc.Execute(this.Uri[i], "head");}
                     catch (Exception ex) { }
                 }
             }
