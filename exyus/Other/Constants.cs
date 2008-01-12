@@ -31,6 +31,8 @@ namespace Exyus
         public const string hdr_exyus = "X-Exyus";
         public const string hdr_cookie = "Cookie";
         public const string hdr_authorization = "Authorization";
+        public const string hdr_ExyusCache = "X-Exyus-Cache";
+        public const string hdr_no_cache = "no-cache";
 
         // string formats
         public const string fmt_gmtdate = "{0:r}";
@@ -58,6 +60,17 @@ namespace Exyus
         public const string cfg_authTimeout = "AuthTimeout";
         public const string cfg_fileExtension = "fileExtension";
         public const string cfg_mediaTypes = "mediaTypes";
+        public const string cfg_exyusSettings = "exyusSettings";
+        public const string cfg_redirectUrls = "redirectUrls";
+        public const string cfg_rewriteUrls = "rewriteUrls";
+        public const string cfg_authFormUrl = "authFormUrl";
+        public const string cfg_authUrls = "authUrls";
+        public const string cfg_authUsers = "authUsers";
+        public const string cfg_systemUser = "systemUser";
+        public const string cfg_authType = "authType";
+        public const string cfg_authRealm = "authRealm";
+        public const string cfg_sendSessionCookies = "send-session-cookies";
+        public const string cfg_sendUserCookies = "send-user-cookies";
 
         // misc
         public const string msc_sys_file_ext = ".xcs";

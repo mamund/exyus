@@ -38,7 +38,7 @@ namespace Exyus.Web
                 this.ContentType = Constants.cType_Html;
 
             // set system extension
-            s_ext = util.GetConfigSectionItem("exyusSettings",Constants.cfg_fileExtension, Constants.msc_sys_file_ext);
+            s_ext = util.GetConfigSectionItem(Constants.cfg_exyusSettings,Constants.cfg_fileExtension, Constants.msc_sys_file_ext);
 
             //get first pattern (if none set already)
             if (this.UrlPattern == null || this.UrlPattern == string.Empty)
@@ -365,7 +365,7 @@ namespace Exyus.Web
                 }
 
                 this.StatusCode = HttpStatusCode.Created;
-                this.Location = util.GetConfigSectionItem("exyusSettings", Constants.cfg_rootfolder) + util.ReplaceArgs(this.PostLocationUri, arg_list) + id;
+                this.Location = util.GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_rootfolder) + util.ReplaceArgs(this.PostLocationUri, arg_list) + id;
 
                 // cache invalidation
                 ch.ClearCache(this.ImmediateCacheUriTemplates, this.BackgroundCacheUriTemplates, "", arg_list, util.LoadUriCache());

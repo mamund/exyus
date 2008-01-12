@@ -58,7 +58,7 @@ namespace Exyus.Web
                 url = this.Context.Request.Url.ToString();
 
                 // get the document
-                file = Context.Server.MapPath(string.Format("{0}{1}{2}", util.GetConfigSectionItem("exyusSettings", Constants.cfg_templatefolder), template_dir, template));
+                file = Context.Server.MapPath(string.Format("{0}{1}{2}", util.GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_templatefolder), template_dir, template));
 
                 // resolve the xml document and any includes
                 xmlout = xfr.GetXmlFile(file, url);
