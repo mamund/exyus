@@ -1,0 +1,3 @@
+#summary Describes the StaticResource Class
+
+to-do
