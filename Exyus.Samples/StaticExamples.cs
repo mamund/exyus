@@ -28,6 +28,7 @@ namespace Exyus.Samples.StaticExamples
 <li><a href='./testing'>./testing</a></li>
 <li><a href='./svg/'>./svg/</a></li>
 <li><a href='./../editable/'>./../editable/</a></li>
+<li><a href='./../postable/'>./../postable/</a></li>
 <li><a href='./remote/'>./remote/</a></li>
 </ul>
 </body>
