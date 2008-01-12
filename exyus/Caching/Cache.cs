@@ -111,7 +111,7 @@ namespace Exyus.Caching
                 "{0}://{1}{2}",
                 HttpContext.Current.Request.Url.Scheme,
                 HttpContext.Current.Request.Url.DnsSafeHost,
-                util.GetConfigSectionItem(Constants.cfg_rootfolder)
+                util.GetConfigItem(Constants.cfg_rootfolder)
                 );
 
             // do the immeidate cache invalidations on the current thread
