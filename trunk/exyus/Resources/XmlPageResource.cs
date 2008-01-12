@@ -67,7 +67,7 @@ namespace Exyus.Web
                 if (this.TemplateXml != string.Empty)
                 {
                     // resolve the xml document and any includes
-                    file = Context.Server.MapPath(util.GetConfigSectionItem("exyusSettings", Constants.cfg_templatefolder) + this.TemplateXml);
+                    file = Context.Server.MapPath(util.GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_templatefolder) + this.TemplateXml);
                     url = this.Context.Request.Url.ToString();
                     xmlout = xfr.GetXmlFile(file, url);
                 }
@@ -82,7 +82,7 @@ namespace Exyus.Web
                 if (this.TemplateXsl != string.Empty)
                 {
                     XslTransformer xslt = new XslTransformer();
-                    out_text = xslt.ExecuteText(xmlout, this.Context.Server.MapPath(util.GetConfigSectionItem("exyusSettings", Constants.cfg_templatefolder) + this.TemplateXsl));
+                    out_text = xslt.ExecuteText(xmlout, this.Context.Server.MapPath(util.GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_templatefolder) + this.TemplateXsl));
                 }
 
                 // handle caching of this resource

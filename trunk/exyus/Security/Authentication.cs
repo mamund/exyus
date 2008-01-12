@@ -24,7 +24,7 @@ namespace Exyus.Security
         public void ProduceAuthHeader()
         {
             HttpApplication app = HttpContext.Current.ApplicationInstance;
-            string authtype = util.GetConfigSectionItem(Constants.cfg_exyusSecurity, "authType");
+            string authtype = util.GetConfigSectionItem(Constants.cfg_exyusSecurity, Constants.cfg_authType);
             string[] authlist = authtype.Split(',');
 
             for (int i = 0; i < authlist.Length; i++)
@@ -32,13 +32,13 @@ namespace Exyus.Security
                 // send out basic auth header
                 if (authlist[i].ToLower() == "basic")
                 {
-                    app.Response.AppendHeader("WWW-Authenticate", String.Format("Basic Realm=\"{0}\"", util.GetConfigSectionItem(Constants.cfg_exyusSecurity, "AuthRealm")));
+                    app.Response.AppendHeader("WWW-Authenticate", String.Format("Basic Realm=\"{0}\"", util.GetConfigSectionItem(Constants.cfg_exyusSecurity, Constants.cfg_authRealm)));
                 }
 
                 // send out digest auth header
                 if (authlist[i].ToLower() == "digest")
                 {
-                    string authrealm = util.GetConfigSectionItem(Constants.cfg_exyusSecurity, "AuthRealm");
+                    string authrealm = util.GetConfigSectionItem(Constants.cfg_exyusSecurity, Constants.cfg_authRealm);
                     string nonce = GetCurrentNonce();
                     string opaque = "0000000000000000";
 
@@ -65,7 +65,7 @@ namespace Exyus.Security
         {
             HttpApplication app = HttpContext.Current.ApplicationInstance;
             bool rtn = false;
-            string authtype = util.GetConfigSectionItem(Constants.cfg_exyusSecurity, "authType");
+            string authtype = util.GetConfigSectionItem(Constants.cfg_exyusSecurity, Constants.cfg_authType);
 
             // if client sent back basic auth
             if (authHeader.Substring(0, 5).ToLower() == "basic")
@@ -109,14 +109,14 @@ namespace Exyus.Security
         public bool ValidateHeader(ListDictionary dlist, string pword)
         {
             HttpApplication app = HttpContext.Current.ApplicationInstance;
-            string authtype = util.GetConfigSectionItem(Constants.cfg_exyusSecurity, "authType");
+            string authtype = util.GetConfigSectionItem(Constants.cfg_exyusSecurity, Constants.cfg_authType);
             bool rtn = false;
 
             // if it's digest, validate it 
             if (dlist.Count > 0)
             {
                 string response = string.Empty;
-                string a1 = string.Format("{0}:{1}:{2}", dlist["username"], util.GetConfigSectionItem(Constants.cfg_exyusSecurity, "AuthRealm"), pword);
+                string a1 = string.Format("{0}:{1}:{2}", dlist["username"], util.GetConfigSectionItem(Constants.cfg_exyusSecurity, Constants.cfg_authRealm), pword);
                 string a2 = string.Format("{0}:{1}", app.Request.HttpMethod, dlist["uri"]);
 
                 if (dlist["qop"] != null)
@@ -153,7 +153,7 @@ namespace Exyus.Security
             bool isRoleCached = true;
             string cache_key = util.MD5(user);
             string xpath = String.Format("/users/user[@name='{0}'][@password='{1}']", user, pass);
-            string userFile = util.GetConfigSectionItem(Constants.cfg_exyusSecurity, "authUsers");
+            string userFile = util.GetConfigSectionItem(Constants.cfg_exyusSecurity, Constants.cfg_authUsers);
             string fullpath = app.Request.MapPath(userFile);
             XmlNode userNode = null;
             XmlDocument xmldoc = new XmlDocument();
@@ -284,7 +284,7 @@ namespace Exyus.Security
             string auth_url = string.Empty;
 
             // see if we need to check at all
-            if (util.GetConfigSectionItem(Constants.cfg_exyusSecurity, "authType").ToLower() == "none")
+            if (util.GetConfigSectionItem(Constants.cfg_exyusSecurity, Constants.cfg_authType).ToLower() == "none")
             {
                 rtn = false;
             }
@@ -297,7 +297,7 @@ namespace Exyus.Security
                 else
                 {
                     // we need this for cache dependency
-                    string authFile = util.GetConfigSectionItem(Constants.cfg_exyusSecurity, "authUrls");
+                    string authFile = util.GetConfigSectionItem(Constants.cfg_exyusSecurity, Constants.cfg_authUrls);
                     string fullpath = app.Request.MapPath(authFile);
 
                     // go get url collection
@@ -338,7 +338,7 @@ namespace Exyus.Security
         {
             HttpApplication app = HttpContext.Current.ApplicationInstance;
             int timeout = Convert.ToInt32((util.GetConfigSectionItem(Constants.cfg_exyusSecurity, Constants.cfg_authTimeout) != string.Empty ? util.GetConfigSectionItem(Constants.cfg_exyusSecurity, Constants.cfg_authTimeout) : "20"));
-            string authFile = util.GetConfigSectionItem(Constants.cfg_exyusSecurity, "authUrls");
+            string authFile = util.GetConfigSectionItem(Constants.cfg_exyusSecurity, Constants.cfg_authUrls);
             string fullpath = app.Request.MapPath(authFile);
             XmlNodeList authNodes = null;
             XmlDocument xmldoc = new XmlDocument();
@@ -381,7 +381,7 @@ namespace Exyus.Security
             string cache_key = util.MD5(user);
             bool isUserCached = true;
             string xpath = String.Format("/users/user[@name='{0}']", user);
-            string userFile = util.GetConfigSectionItem(Constants.cfg_exyusSecurity, "authUsers");
+            string userFile = util.GetConfigSectionItem(Constants.cfg_exyusSecurity, Constants.cfg_authUsers);
             string fullpath = app.Request.MapPath(userFile);
             XmlNode userNode = null;
             XmlDocument xmldoc = new XmlDocument();

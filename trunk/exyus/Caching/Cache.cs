@@ -83,7 +83,7 @@ namespace Exyus.Caching
 
                 handler.Response = util.FixEncoding(co.Payload);
                 handler.ContentType = co.ContentType;
-                handler.Context.Response.AppendHeader("X-Exyus-Cache", co.ETag);
+                handler.Context.Response.AppendHeader(Constants.hdr_ExyusCache, co.ETag);
 
                 return true;
             }
@@ -95,7 +95,7 @@ namespace Exyus.Caching
         // force cache invalidation
         public void ClearCache(string[] immediateUriTemplates, string[] backgroundUriTemplates)
         {
-            ClearCache(immediateUriTemplates, backgroundUriTemplates, "",null);
+            ClearCache(immediateUriTemplates, backgroundUriTemplates, string.Empty, null);
         }
         public void ClearCache(string[] immediateUriTemplates, string[] backgroundUriTemplates, string id, Hashtable uriCache)
         {
@@ -111,7 +111,7 @@ namespace Exyus.Caching
                 "{0}://{1}{2}",
                 HttpContext.Current.Request.Url.Scheme,
                 HttpContext.Current.Request.Url.DnsSafeHost,
-                util.GetConfigSectionItem("exyusSettings",Constants.cfg_rootfolder)
+                util.GetConfigSectionItem(Constants.cfg_exyusSettings,Constants.cfg_rootfolder)
                 );
 
             // do the immeidate cache invalidations on the current thread
@@ -173,11 +173,11 @@ namespace Exyus.Caching
             bool nocache = false;
 
             // is caching config'ed as off?
-            if (util.GetConfigSectionItem("exyusSettings", Constants.cfg_caching) == "false")
+            if (util.GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_caching) == "false")
                 return null;
 
             // did requestor specify no-cache?
-            if (util.GetHttpHeader(Constants.hdr_cache_control).IndexOf("no-cache") != -1)
+            if (util.GetHttpHeader(Constants.hdr_cache_control).IndexOf(Constants.hdr_no_cache) != -1)
                 nocache = true;
 
             // see if valid cache in memory is available
@@ -211,15 +211,15 @@ namespace Exyus.Caching
         }
         public CacheObject PutCacheItem(HttpContext ctx, string data)
         {
-            return PutCacheItem(ctx, data, 0, 0, DateTime.UtcNow, "");
+            return PutCacheItem(ctx, data, 0, 0, DateTime.UtcNow, string.Empty);
         }
         public CacheObject PutCacheItem(HttpContext ctx, string data, int maxage)
         {
-            return PutCacheItem(ctx, data, maxage, 0, DateTime.UtcNow, "");
+            return PutCacheItem(ctx, data, maxage, 0, DateTime.UtcNow, string.Empty);
         }
         public CacheObject PutCacheItem(HttpContext ctx, string data, int maxage, int localage)
         {
-            return PutCacheItem(ctx, data, maxage, localage, DateTime.UtcNow, "");
+            return PutCacheItem(ctx, data, maxage, localage, DateTime.UtcNow, string.Empty);
         }
         public CacheObject PutCacheItem(HttpContext ctx, string data, int maxage, int localage, string contenttype)
         {
@@ -230,7 +230,7 @@ namespace Exyus.Caching
             DateTime localdt = System.DateTime.Now;
             DateTime gmdt = dt;
 
-            if (util.GetConfigSectionItem("exyusSettings", Constants.cfg_caching) == "false")
+            if (util.GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_caching) == "false")
                 return null;
 
             string cachename = GetCacheMemoryName(ctx,contenttype);
@@ -285,11 +285,11 @@ namespace Exyus.Caching
                 return false;
 
             // did requestor specify no-cache?
-            if (util.GetHttpHeader(Constants.hdr_cache_control).IndexOf("no-cache") != -1)
+            if (util.GetHttpHeader(Constants.hdr_cache_control).IndexOf(Constants.hdr_no_cache) != -1)
                 return false;
 
             // old http 1.0 option
-            if (util.GetHttpHeader("Pragma").IndexOf("no-cache") != -1)
+            if (util.GetHttpHeader("Pragma").IndexOf(Constants.hdr_no_cache) != -1)
                 return false;
 
             // check for etag = if-match

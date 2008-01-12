@@ -158,7 +158,7 @@ namespace Exyus
             string fullpath = string.Empty;
             HttpContext ctx = HttpContext.Current;
 
-            fullpath = ctx.Server.MapPath(GetConfigSectionItem("exyusSettings", Constants.cfg_mediaTypes));
+            fullpath = ctx.Server.MapPath(GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_mediaTypes));
 
             filetypes = (SortedList)ctx.Cache.Get(fullpath);
             if (filetypes == null)
@@ -374,7 +374,7 @@ namespace Exyus
             string rtn = string.Empty;
             SortedList formUrls = null;
             string form_url = string.Empty;
-            string formUrl = GetConfigSectionItem(Constants.cfg_exyusSecurity, "authFormUrl", string.Empty);
+            string formUrl = GetConfigSectionItem(Constants.cfg_exyusSecurity, Constants.cfg_authFormUrl, string.Empty);
 
             if (formUrl == string.Empty)
                 return string.Empty;
@@ -386,7 +386,7 @@ namespace Exyus
             else
             {
                 // we need this for cache dependency
-                string authFile = GetConfigSectionItem(Constants.cfg_exyusSecurity, "authUrls");
+                string authFile = GetConfigSectionItem(Constants.cfg_exyusSecurity, Constants.cfg_authUrls);
                 string fullpath = app.Request.MapPath(authFile);
 
                 // go get url collection
@@ -426,7 +426,7 @@ namespace Exyus
             SortedList formUrls = null;
             HttpApplication app = HttpContext.Current.ApplicationInstance;
             int timeout = Convert.ToInt32((GetConfigSectionItem(Constants.cfg_exyusSecurity, Constants.cfg_authTimeout) != string.Empty ? GetConfigSectionItem(Constants.cfg_exyusSecurity, Constants.cfg_authTimeout) : "20"));
-            string formFile = GetConfigSectionItem(Constants.cfg_exyusSecurity, "authUrls");
+            string formFile = GetConfigSectionItem(Constants.cfg_exyusSecurity, Constants.cfg_authUrls);
             string fullpath = app.Request.MapPath(formFile);
             XmlNodeList formNodes = null;
             XmlDocument xmldoc = new XmlDocument();
@@ -563,7 +563,7 @@ namespace Exyus
             bool isUserCached = true;
             string cache_key = MD5(user + pass);
             string xpath = String.Format("/users/user[@name='{0}'][@password='{1}']", user, pass);
-            string userFile = GetConfigSectionItem(Constants.cfg_exyusSecurity, "authUsers");
+            string userFile = GetConfigSectionItem(Constants.cfg_exyusSecurity, Constants.cfg_authUsers);
             string fullpath = ctx.Request.MapPath(userFile);
             XmlNode userNode = null;
             XmlDocument xmldoc = new XmlDocument();
@@ -887,7 +887,7 @@ namespace Exyus
         public System.Net.NetworkCredential GetSystemCredentials()
         {
             // get system user from config file
-            string sysuser = GetConfigSectionItem(Constants.cfg_exyusSecurity, "systemUser");
+            string sysuser = GetConfigSectionItem(Constants.cfg_exyusSecurity, Constants.cfg_systemUser);
             if (sysuser == string.Empty)
                 sysuser = "Guest;";
             string[] up = sysuser.Split(';');
