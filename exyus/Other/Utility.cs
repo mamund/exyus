@@ -158,7 +158,7 @@ namespace Exyus
             string fullpath = string.Empty;
             HttpContext ctx = HttpContext.Current;
 
-            fullpath = ctx.Server.MapPath(GetConfigItem(Constants.cfg_mediaTypes));
+            fullpath = ctx.Server.MapPath(GetConfigSectionItem("exyusSettings", Constants.cfg_mediaTypes));
 
             filetypes = (SortedList)ctx.Cache.Get(fullpath);
             if (filetypes == null)

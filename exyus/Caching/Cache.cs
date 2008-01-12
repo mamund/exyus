@@ -111,7 +111,7 @@ namespace Exyus.Caching
                 "{0}://{1}{2}",
                 HttpContext.Current.Request.Url.Scheme,
                 HttpContext.Current.Request.Url.DnsSafeHost,
-                util.GetConfigItem(Constants.cfg_rootfolder)
+                util.GetConfigSectionItem("exyusSettings",Constants.cfg_rootfolder)
                 );
 
             // do the immeidate cache invalidations on the current thread
@@ -173,7 +173,7 @@ namespace Exyus.Caching
             bool nocache = false;
 
             // is caching config'ed as off?
-            if (util.GetConfigItem(Constants.cfg_caching) == "false")
+            if (util.GetConfigSectionItem("exyusSettings", Constants.cfg_caching) == "false")
                 return null;
 
             // did requestor specify no-cache?
@@ -230,7 +230,7 @@ namespace Exyus.Caching
             DateTime localdt = System.DateTime.Now;
             DateTime gmdt = dt;
 
-            if (util.GetConfigItem(Constants.cfg_caching) == "false")
+            if (util.GetConfigSectionItem("exyusSettings", Constants.cfg_caching) == "false")
                 return null;
 
             string cachename = GetCacheMemoryName(ctx,contenttype);

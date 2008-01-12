@@ -32,7 +32,7 @@ namespace Exyus
             SortedList redirUriList = new SortedList();
             HttpApplication app = HttpContext.Current.ApplicationInstance;
             int timeout = Convert.ToInt32(util.GetConfigSectionItem(Constants.cfg_exyusSecurity, Constants.cfg_authTimeout, "20"));
-            string redirFile = util.GetConfigSectionItem(Constants.cfg_exyusSecurity, "redirectUrls");
+            string redirFile = util.GetConfigSectionItem("exyusSettings", "redirectUrls");
             string fullpath = app.Request.MapPath(redirFile);
             XmlNodeList redirNodes = null;
             XmlDocument xmldoc = new XmlDocument();
@@ -87,7 +87,7 @@ namespace Exyus
             else
             {
                 // we need this for cache dependency
-                string redirFile = util.GetConfigSectionItem(Constants.cfg_exyusSecurity, "redirectUrls");
+                string redirFile = util.GetConfigSectionItem("exyusSettings", "redirectUrls");
                 string fullpath = app.Request.MapPath(redirFile);
 
                 // go get url collection and search
@@ -100,7 +100,8 @@ namespace Exyus
                     if (mx.Success)
                     {
                         // build up redirect
-                        rtn = rx.Replace(uri, redirUriList.GetByIndex(i).ToString());
+                        rtn = util.GetConfigSectionItem("exyusSettings", "rootfolder") + rx.Replace(uri, redirUriList.GetByIndex(i).ToString());
+                        rtn = rtn.Replace(".xcs", "");
 
                         // save this for later
                         app.Context.Cache.Add(
@@ -127,7 +128,7 @@ namespace Exyus
             SortedList rewriteUriList = new SortedList();
             HttpApplication app = HttpContext.Current.ApplicationInstance;
             int timeout = Convert.ToInt32(util.GetConfigSectionItem(Constants.cfg_exyusSecurity, Constants.cfg_authTimeout, "20"));
-            string rewriteFile = util.GetConfigSectionItem(Constants.cfg_exyusSecurity, "rewriteUrls");
+            string rewriteFile = util.GetConfigSectionItem("exyusSettings", "rewriteUrls");
             string fullpath = app.Request.MapPath(rewriteFile);
             XmlNodeList rewriteNodes = null;
             XmlDocument xmldoc = new XmlDocument();
@@ -181,7 +182,7 @@ namespace Exyus
             else
             {
                 // we need this for cache dependency
-                string rewriteFile = util.GetConfigSectionItem(Constants.cfg_exyusSecurity, "rewriteUrls");
+                string rewriteFile = util.GetConfigSectionItem("exyusSettings", "rewriteUrls");
                 string fullpath = app.Request.MapPath(rewriteFile);
 
                 // go get url collection and search
@@ -194,7 +195,7 @@ namespace Exyus
                     if(mx.Success)
                     {
                         // build up redirect
-                        rtn = rx.Replace(uri, rewriteUriList.GetByIndex(i).ToString());
+                        rtn = util.GetConfigSectionItem("exyusSettings","rootfolder")+rx.Replace(uri, rewriteUriList.GetByIndex(i).ToString());
 
                         // save this for later
                         app.Context.Cache.Add(

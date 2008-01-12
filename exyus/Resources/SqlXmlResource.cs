@@ -72,7 +72,7 @@ namespace Exyus.Web
                     string cmdtext = xslt.ExecuteText(xmlin, XslFile);
 
                     // execute sql and return empty
-                    SqlXmlCommand cmd = new SqlXmlCommand(util.GetConfigItem(this.ConnectionString));
+                    SqlXmlCommand cmd = new SqlXmlCommand(util.GetConfigSectionItem("exyusSettings", this.ConnectionString));
                     cmd.CommandText = cmdtext;
                     cmd.ExecuteNonQuery();
                     this.StatusCode = HttpStatusCode.OK;
@@ -161,7 +161,7 @@ namespace Exyus.Web
 
 
                     // execute sql and return results
-                    SqlXmlCommand cmd = new SqlXmlCommand(util.GetConfigItem(this.ConnectionString));
+                    SqlXmlCommand cmd = new SqlXmlCommand(util.GetConfigSectionItem("exyusSettings", this.ConnectionString));
                     cmd.CommandText = cmdtext;
 
                     using (XmlReader rdr = cmd.ExecuteXmlReader())
@@ -239,7 +239,7 @@ namespace Exyus.Web
                     string cmdtext = xslt.ExecuteText(xmlin, XslFile);
 
                     // execute sql and return results
-                    SqlXmlCommand cmd = new SqlXmlCommand(util.GetConfigItem(ConnectionString));
+                    SqlXmlCommand cmd = new SqlXmlCommand(util.GetConfigSectionItem("exyusSettings", ConnectionString));
                     cmd.CommandText = cmdtext;
 
                     using (XmlReader rdr = cmd.ExecuteXmlReader())
@@ -251,7 +251,7 @@ namespace Exyus.Web
                     if (xmlout.SelectSingleNode("//id") != null)
                     {
                         id = xmlout.SelectSingleNode("//id").Value;
-                        this.Location = util.GetConfigItem(Constants.cfg_rootfolder) + this.PostLocationUri + id;
+                        this.Location = util.GetConfigSectionItem("exyusSettings", Constants.cfg_rootfolder) + this.PostLocationUri + id;
                     }
 
                     // cache invalidation
@@ -322,7 +322,7 @@ namespace Exyus.Web
                     string cmdtext = xslt.ExecuteText(xmlin, XslFile);
 
                     // execute sql and return results
-                    SqlXmlCommand cmd = new SqlXmlCommand(util.GetConfigItem(this.ConnectionString));
+                    SqlXmlCommand cmd = new SqlXmlCommand(util.GetConfigSectionItem("exyusSettings", this.ConnectionString));
                     cmd.CommandText = string.Format(cmdtext, id);
 
                     using (XmlReader rdr = cmd.ExecuteXmlReader())

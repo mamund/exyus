@@ -77,7 +77,7 @@ namespace Exyus.Web
 
                 // generate a new version
                 // get the document
-                file = Context.Server.MapPath(util.GetConfigItem(Constants.cfg_templatefolder) + this.TemplateXml);
+                file = Context.Server.MapPath(util.GetConfigSectionItem("exyusSettings", Constants.cfg_templatefolder) + this.TemplateXml);
                 url = this.Context.Request.Url.ToString();
 
                 // resolve the xml document and any includes
@@ -97,7 +97,7 @@ namespace Exyus.Web
 
                     // transform results for final output
                     XslTransformer xslt = new XslTransformer();
-                    out_text = xslt.ExecuteText(xmlout, this.Context.Server.MapPath(util.GetConfigItem(Constants.cfg_templatefolder) + this.TemplateXsl));
+                    out_text = xslt.ExecuteText(xmlout, this.Context.Server.MapPath(util.GetConfigSectionItem("exyusSettings",Constants.cfg_templatefolder) + this.TemplateXsl));
                 }
 
                 // handle caching the resource
@@ -159,7 +159,7 @@ namespace Exyus.Web
                 // transform results for final output
                 xmlout.LoadXml(out_text);
                 XslTransformer xslt = new XslTransformer();
-                out_text = xslt.ExecuteText(xmlout, this.Context.Server.MapPath(util.GetConfigItem(Constants.cfg_templatefolder) + this.PostXsl));
+                out_text = xslt.ExecuteText(xmlout, this.Context.Server.MapPath(util.GetConfigSectionItem("exyusSettings", Constants.cfg_templatefolder) + this.PostXsl));
             }
             catch (HttpException hex)
             {
