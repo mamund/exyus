@@ -63,6 +63,7 @@ namespace Exyus.Web
                 {
                     for (int i = 0; i < this.RequestHeaders.Count; i++)
                     {
+                        // some headers must be set as properties only
                         string key = this.RequestHeaders.GetKey(i);
                         string value = this.RequestHeaders[i];
                         switch (key.ToLower())
