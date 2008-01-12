@@ -1,0 +1,3 @@
+#summary Describes the ExyusResource Class
+
+= Exyus Resource =
