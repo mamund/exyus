@@ -1,7 +1,7 @@
 using System;
 using Exyus.Web;
 
-namespace Exyus.Samples.StaticExmaples
+namespace Exyus.Samples.StaticExamples
 {
     // exmaple of 'literal page'
     [UriPattern(@"/samples/(?:\.xcs)(?:.*)?")]
@@ -21,6 +21,8 @@ namespace Exyus.Samples.StaticExmaples
 <li><a href='./virtual/?name=exyus'>./virtual/?name=exyus</a></li>
 <li><a href='./virtual/hello?name=guest'>./virtual/hello?name=guest</a></li>
 <li><a href='./time/'>./time/</a></li>
+<li><a href='./time/?_accept=text/xml'>./time/?_accept=text/xml</a></li>
+<li><a href='./time/?_accept=text/plain'>./time/?_accept=text/plain</a></li>
 <li><a href='./page/'>./page/</a></li>
 <li><a href='./page/testing-exyus'>./page/testing-exyus</a></li>
 <li><a href='./testing'>./testing</a></li>
