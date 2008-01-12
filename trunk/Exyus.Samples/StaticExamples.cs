@@ -1,7 +1,7 @@
 using System;
 using Exyus.Web;
 
-namespace Exyus.Samples.Static
+namespace Exyus.Samples.StaticExmaples
 {
     // exmaple of 'literal page'
     [UriPattern(@"/samples/(?:\.xcs)(?:.*)?")]
