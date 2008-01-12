@@ -49,7 +49,7 @@ namespace Exyus.Web
         public void BeginRequest(object sender, EventArgs args)
         {
             // only create session cookies if config sez it's ok
-            if (util.GetConfigItem("send-session-cookies") == "true")
+            if (util.GetConfigSectionItem("exyusSettings", "send-session-cookies") == "true")
             {
                 string sk = string.Empty;
 
@@ -155,7 +155,7 @@ namespace Exyus.Web
                 if (auth.ValidateHeader(dlist, pass))
                 {
                     // write special cookie for this auth'ed user
-                    if (util.GetConfigItem("send-user-cookies") == "true")
+                    if (util.GetConfigSectionItem("exyusSettings", "send-user-cookies") == "true")
                     {
                         if (app.Request.Cookies.Get("session-user") != null)
                         {
