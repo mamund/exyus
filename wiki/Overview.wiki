@@ -18,3 +18,5 @@ In the initial release, *Exyus* provides the following Resource Classes:
   * [StaticResource] - Supports literal string and file-based read-only content.
   * [XmlFileResource] - Supports full read/write access to any file that can (ultimately) be transformed into a valid XML document (more on this later).
   * [SqlXmlResource] - Supports access to MS-SQL database that returns valid XML documents.
+  * [XmlPageResource] - Supports producing typical XHTML pages either whole or via the [XmlTemplateResource].
+  * [XmlTemplateResource] - Supports partial-page generation. Can be used to build [XmlpageResource] output.
