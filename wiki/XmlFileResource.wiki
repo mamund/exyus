@@ -1,0 +1,3 @@
+#summary Describes the XmlFileResource Class
+
+to-do
