@@ -46,6 +46,20 @@ namespace Exyus
 
     public class Utility
     {
+        public XmlDocument ProcessFormVars(NameValueCollection formVars)
+        {
+            XmlDocument doc = new XmlDocument();
+            XmlNode root = doc.CreateElement("form");
+            for (int i = 0; i < formVars.Count; i++)
+            {
+                XmlNode node = doc.CreateElement(formVars.Keys[i]);
+                node.AppendChild(doc.CreateTextNode(formVars[i]));
+                root.AppendChild(node);
+            }
+            doc.AppendChild(root);
+            return doc;
+        }
+
         public void SafeAdd(ref Hashtable list, string key, string value)
         {
             if(list.Contains(key))

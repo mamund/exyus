@@ -28,6 +28,9 @@ namespace Exyus.Web
         public string[] XHtmlNodes = null;
         public string[] UpdateMediaTypes = null;
         public string Title = string.Empty;
+        public bool RedirectOnPost = false;
+        public bool RedirectOnPut = false;
+
         private string[] mediaTypes = null; 
 
         Cache ch = new Cache();
@@ -286,6 +289,7 @@ namespace Exyus.Web
             string id = string.Empty;
             string xsl_file = string.Empty;
             string xsd_file = string.Empty;
+            string original_contentType = this.ContentType;
 
             absoluteUri = this.Context.Request.RawUrl;
 
@@ -326,7 +330,10 @@ namespace Exyus.Web
 
                 // get the xmldoc from the entity
                 this.Context.Request.InputStream.Position = 0;
-                xmlin.Load(this.Context.Request.InputStream);
+                if (mtype.ToLower() == Constants.cType_FormUrlEncoded)
+                    xmlin = util.ProcessFormVars(this.Context.Request.Form);
+                else
+                    xmlin.Load(this.Context.Request.InputStream);
 
                 // validate the doc
                 xsd_file = (File.Exists(XsdFileMtype) ? XsdFileMtype : XsdFile);
@@ -364,8 +371,13 @@ namespace Exyus.Web
                     xmlout.Save(fullname);
                 }
 
-                this.StatusCode = HttpStatusCode.Created;
+                // redirect to created item
+                this.StatusCode = (this.RedirectOnPost?HttpStatusCode.Redirect:HttpStatusCode.Created);
                 this.Location = util.GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_rootfolder) + util.ReplaceArgs(this.PostLocationUri, arg_list) + id;
+                // if we were using form-posting, reset to preferred content type (text/html, most likely)
+                if (this.ContentType == Constants.cType_FormUrlEncoded)
+                    this.ContentType = original_contentType;
+                xmlout = null;
 
                 // cache invalidation
                 ch.ClearCache(this.ImmediateCacheUriTemplates, this.BackgroundCacheUriTemplates, "", arg_list, util.LoadUriCache());
@@ -403,6 +415,7 @@ namespace Exyus.Web
             string id = string.Empty;
             string stor_folder = string.Empty;
             string xsl_file = string.Empty;
+            string original_contentType = this.ContentType;
 
             absoluteUri = this.Context.Request.RawUrl;
 
@@ -434,9 +447,13 @@ namespace Exyus.Web
                 if (id == string.Empty)
                     throw new HttpException(400, "missing resource id");
 
-                // get the xmldoc from the entity
+                // get the xmldoc from the entity body
                 xmlin = new XmlDocument();
                 this.Context.Request.InputStream.Position=0;
+                if (mtype.ToLower() == Constants.cType_FormUrlEncoded)
+                    xmlin = util.ProcessFormVars(this.Context.Request.Form);
+                else
+                    xmlin.Load(this.Context.Request.InputStream);
                 xmlin.Load(this.Context.Request.InputStream);
 
                 // validate the doc
@@ -540,9 +557,13 @@ namespace Exyus.Web
                     
                     xmlout.Save(fullname);
 
-                    this.StatusCode = HttpStatusCode.OK;
+                    this.StatusCode = (this.RedirectOnPut?HttpStatusCode.Redirect:HttpStatusCode.OK);
                     this.Location = absoluteUri;
                     xmlout = null;
+
+                    // if we were using form-posting, reset to preferred content type (text/html, most likely)
+                    if (this.ContentType == Constants.cType_FormUrlEncoded)
+                        this.ContentType = original_contentType;
 
                     // cache invalidation
                     ch.ClearCache(this.ImmediateCacheUriTemplates, this.BackgroundCacheUriTemplates, "", arg_list, util.LoadUriCache());
