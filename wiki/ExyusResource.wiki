@@ -1,3 +1,4 @@
 #summary Describes the ExyusResource Class
+#labels Phase-Design
 
 to-do
