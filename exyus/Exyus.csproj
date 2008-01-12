@@ -62,7 +62,7 @@
     <Compile Include="Uri\UriPatternService.cs" />
     <Compile Include="Web\ExyusResource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Web\Requestor.cs" />
+    <Compile Include="Web\WebClient.cs" />
     <Compile Include="Xml\ExyusResolver.cs" />
     <Compile Include="Xml\SchemaValidator.cs" />
     <Compile Include="Web\ExyusModule.cs" />

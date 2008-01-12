@@ -477,23 +477,23 @@ namespace Exyus.Web
                 string put_error = "Unable to complete PUT.";   // generic message
 
                 // next, do a head request for this resource
-                Requestor req = new Requestor();
+                WebClient wc = new WebClient();
                 ExyusPrincipal ep = (ExyusPrincipal)this.Context.User;
-                req.Credentials = new NetworkCredential(((ExyusIdentity)ep.Identity).Name, ((ExyusIdentity)ep.Identity).Password);
+                wc.Credentials = new NetworkCredential(((ExyusIdentity)ep.Identity).Name, ((ExyusIdentity)ep.Identity).Password);
 
                 // load headers for request
                 PutHeaders ph = new PutHeaders(this.Context);
                 if (ph.IfMatch != string.Empty)
-                    req.RequestHeaders.Set(Constants.hdr_if_none_match, ph.IfMatch);
+                    wc.RequestHeaders.Set(Constants.hdr_if_none_match, ph.IfMatch);
                 if (ph.IfUnmodifiedSince != string.Empty)
-                    req.RequestHeaders.Set(Constants.hdr_if_modified_since, ph.IfUnmodifiedSince);
+                    wc.RequestHeaders.Set(Constants.hdr_if_modified_since, ph.IfUnmodifiedSince);
                 if(ph.IfUnmodifiedSince==string.Empty && ph.LastModified!=string.Empty)
-                    req.RequestHeaders.Set(Constants.hdr_if_modified_since, ph.LastModified);
+                    wc.RequestHeaders.Set(Constants.hdr_if_modified_since, ph.LastModified);
 
                 // make request for existing resource
                 try
                 {
-                    out_text = req.Execute(
+                    out_text = wc.Execute(
                         string.Format("{0}://{1}{2}",
                             this.Context.Request.Url.Scheme,
                             this.Context.Request.Url.DnsSafeHost,
@@ -501,8 +501,8 @@ namespace Exyus.Web
                         "head", this.ContentType);
 
                     // record exists, this must be an update
-                    etag = util.GetHttpHeader(Constants.hdr_etag, (NameValueCollection)req.ResponseHeaders);
-                    last_mod = util.GetHttpHeader(Constants.hdr_last_modified, (NameValueCollection)req.ResponseHeaders);
+                    etag = util.GetHttpHeader(Constants.hdr_etag, (NameValueCollection)wc.ResponseHeaders);
+                    last_mod = util.GetHttpHeader(Constants.hdr_last_modified, (NameValueCollection)wc.ResponseHeaders);
                     
                     // sort out update conditions
                     util.CheckPutUpdateCondition(ph, etag, last_mod, ref put_error, ref save_item);
