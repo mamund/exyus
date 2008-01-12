@@ -1,7 +1,7 @@
 using System;
 using Exyus.Web;
 
-namespace Exyus.Editable
+namespace Exyus.Samples.Editable
 {
     // simple direct get handler
     [UriPattern(@"/editable/(?<docid>[^/?]*)?(?:\.xcs)(?:[?])?(?:.*)?")]

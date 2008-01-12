@@ -1,7 +1,7 @@
 using System;
 using Exyus.Web;
 
-namespace Exyus.Samples
+namespace Exyus.Samples.Static
 {
     // exmaple of 'literal page'
     [UriPattern(@"/samples/(?:\.xcs)(?:.*)?")]
@@ -19,11 +19,14 @@ namespace Exyus.Samples
 <h1>samples</h1>
 <ul>
 <li><a href='./virtual/?name=exyus'>./virtual/?name=exyus</a></li>
+<li><a href='./virtual/hello?name=guest'>./virtual/hello?name=guest</a></li>
 <li><a href='./time/'>./time/</a></li>
 <li><a href='./page/'>./page/</a></li>
 <li><a href='./page/testing-exyus'>./page/testing-exyus</a></li>
 <li><a href='./testing'>./testing</a></li>
 <li><a href='./svg/'>./svg/</a></li>
+<li><a href='./../editable/'>./../editable/</a></li>
+<li><a href='./remote/'>./remote/</a></li>
 </ul>
 </body>
 </html>
@@ -38,7 +41,7 @@ namespace Exyus.Samples
     {
         public remotePage()
         {
-            this.Content = Helper.LoadUrl("http://www.amundsen.com/blog/");
+            this.Content = Helper.LoadFromUrl("http://www.amundsen.com/blog/");
         }
     }
 
@@ -119,9 +122,12 @@ namespace Exyus.Samples
     {
         public svgHello()
         {
-
             this.ContentType = "image/svg+xml";
             this.Content = Helper.ReadFile("/xcs/content/samples/hello.svg");
         }
     }
 }
+
+
+
+
