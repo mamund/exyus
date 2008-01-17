@@ -1,4 +1,4 @@
-#summary Descries the WebClient Class
+#summary Describes the WebClient Class
 #labels Phase-Design
 
 to-do
