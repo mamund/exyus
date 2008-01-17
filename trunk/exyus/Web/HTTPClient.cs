@@ -154,7 +154,6 @@ namespace Exyus.Web
                 // typical http error
                 if (wex.Status == WebExceptionStatus.ProtocolError)
                 {
-                    Utility util = new Utility();
                     HttpWebResponse wrsp = (HttpWebResponse)wex.Response;
                     throw new HttpException((int)wrsp.StatusCode, wrsp.StatusDescription);
                 }
