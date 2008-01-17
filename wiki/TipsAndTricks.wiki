@@ -1,3 +1,4 @@
 #summary Exyus Tips and Tricks
+#labels Featured
 
   * Using Exyus to do a [RecordLookupExample 'record look-up']
