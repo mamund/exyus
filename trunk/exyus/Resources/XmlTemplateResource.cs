@@ -12,7 +12,7 @@ namespace Exyus.Web
 {
     [UriPattern("/templates/(.*)")]
     [MediaTypes("text/xml")]
-    class XmlTemplateResource : WebResource
+    class XmlTemplateResource : HTTPResource
     {        
         Utility util = new Utility();
         Cache ch = new Cache();
@@ -49,7 +49,7 @@ namespace Exyus.Web
             try
             {
                 // return cached copy, if you can
-                if (ch.CachedResourceIsValid((WebResource)this))
+                if (ch.CachedResourceIsValid((HTTPResource)this))
                     return;
 
                 // generate a new version
@@ -65,7 +65,7 @@ namespace Exyus.Web
                 out_text = util.FixEncoding(xmlout.OuterXml);
 
                 // handle caching of this resource
-                ch.CacheResource((WebResource)this, out_text);
+                ch.CacheResource((HTTPResource)this, out_text);
             }
             catch (HttpException hex)
             {

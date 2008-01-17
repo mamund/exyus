@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 
 namespace Exyus.Web
 {
-    public class WebClient
+    public class HTTPClient
     {
         // public properties
         public WebHeaderCollection RequestHeaders = new WebHeaderCollection();
@@ -24,12 +24,12 @@ namespace Exyus.Web
         public NetworkCredential Credentials = new NetworkCredential();
         public long ResponseLength = 0;
 
-        public WebClient() { }
-        public WebClient(NetworkCredential crendentials)
+        public HTTPClient() { }
+        public HTTPClient(NetworkCredential crendentials)
         {
             this.Credentials = crendentials;
         }
-        public WebClient(string user, string password)
+        public HTTPClient(string user, string password)
         {
             this.Credentials = new NetworkCredential(user, password);
         }
@@ -181,10 +181,10 @@ namespace Exyus.Web
         public void Execute()
         {
             Utility util = new Utility();
-            WebClient wc = new WebClient();
-            wc.RequestHeaders.Set(Constants.hdr_cache_control, "no-cache");
-            wc.Credentials = util.GetSystemCredentials();
-            wc.CookieCollection = this.CookieCollection;
+            HTTPClient cl = new HTTPClient();
+            cl.RequestHeaders.Set(Constants.hdr_cache_control, "no-cache");
+            cl.Credentials = util.GetSystemCredentials();
+            cl.CookieCollection = this.CookieCollection;
 
             for (int i = 0; i < Uri.Length; i++)
             {
@@ -193,14 +193,14 @@ namespace Exyus.Web
                 {
                     for (int j = 0; j < media.Length; j++)
                     {
-                        wc.RequestHeaders.Set("Accept", media[j]);
-                        try {wc.Execute(this.Uri[i], "head", media[j]);}
+                        cl.RequestHeaders.Set("Accept", media[j]);
+                        try {cl.Execute(this.Uri[i], "head", media[j]);}
                         catch (Exception ex) { }
                     }
                 }
                 else
                 {
-                    try {wc.Execute(this.Uri[i], "head");}
+                    try {cl.Execute(this.Uri[i], "head");}
                     catch (Exception ex) { }
                 }
             }

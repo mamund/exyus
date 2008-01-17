@@ -14,7 +14,7 @@ using Exyus.Caching;
 namespace Exyus.Web
 {
     [MediaTypes("text/xml")]
-    public class XmlFileResource : WebResource
+    public class XmlFileResource : HTTPResource
     {
         private Utility util = new Utility();
         private string rex_notfound = "not found";
@@ -169,7 +169,7 @@ namespace Exyus.Web
             try
             {
                 // see if we have a current copy
-                if(ch.CachedResourceIsValid((WebResource)this))
+                if(ch.CachedResourceIsValid((HTTPResource)this))
                     return;
 
                 // use regexp pattern to covert url into xml document
@@ -245,7 +245,7 @@ namespace Exyus.Web
                         throw new FileNotFoundException(string.Format(rex_notfound + " [{0}]", this.Context.Request.RawUrl.Replace(s_ext, "")));
                 }
 
-                ch.CacheResource((WebResource)this, util.FixEncoding(out_text));
+                ch.CacheResource((HTTPResource)this, util.FixEncoding(out_text));
             }
             catch (HttpException hex)
             {
@@ -494,23 +494,23 @@ namespace Exyus.Web
                 string put_error = "Unable to complete PUT.";   // generic message
 
                 // next, do a head request for this resource
-                WebClient wc = new WebClient();
+                HTTPClient cl = new HTTPClient();
                 ExyusPrincipal ep = (ExyusPrincipal)this.Context.User;
-                wc.Credentials = new NetworkCredential(((ExyusIdentity)ep.Identity).Name, ((ExyusIdentity)ep.Identity).Password);
+                cl.Credentials = new NetworkCredential(((ExyusIdentity)ep.Identity).Name, ((ExyusIdentity)ep.Identity).Password);
 
                 // load headers for request
                 PutHeaders ph = new PutHeaders(this.Context);
                 if (ph.IfMatch != string.Empty)
-                    wc.RequestHeaders.Set(Constants.hdr_if_none_match, ph.IfMatch);
+                    cl.RequestHeaders.Set(Constants.hdr_if_none_match, ph.IfMatch);
                 if (ph.IfUnmodifiedSince != string.Empty)
-                    wc.RequestHeaders.Set(Constants.hdr_if_modified_since, ph.IfUnmodifiedSince);
+                    cl.RequestHeaders.Set(Constants.hdr_if_modified_since, ph.IfUnmodifiedSince);
                 if(ph.IfUnmodifiedSince==string.Empty && ph.LastModified!=string.Empty)
-                    wc.RequestHeaders.Set(Constants.hdr_if_modified_since, ph.LastModified);
+                    cl.RequestHeaders.Set(Constants.hdr_if_modified_since, ph.LastModified);
 
                 // make request for existing resource
                 try
                 {
-                    out_text = wc.Execute(
+                    out_text = cl.Execute(
                         string.Format("{0}://{1}{2}",
                             this.Context.Request.Url.Scheme,
                             this.Context.Request.Url.DnsSafeHost,
@@ -518,8 +518,8 @@ namespace Exyus.Web
                         "head", this.ContentType);
 
                     // record exists, this must be an update
-                    etag = util.GetHttpHeader(Constants.hdr_etag, (NameValueCollection)wc.ResponseHeaders);
-                    last_mod = util.GetHttpHeader(Constants.hdr_last_modified, (NameValueCollection)wc.ResponseHeaders);
+                    etag = util.GetHttpHeader(Constants.hdr_etag, (NameValueCollection)cl.ResponseHeaders);
+                    last_mod = util.GetHttpHeader(Constants.hdr_last_modified, (NameValueCollection)cl.ResponseHeaders);
                     
                     // sort out update conditions
                     util.CheckPutUpdateCondition(ph, etag, last_mod, ref put_error, ref save_item);

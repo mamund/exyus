@@ -20,9 +20,9 @@ namespace Exyus
         public static string LoadUrl(string url, string contenttype)
         {
             string rtn = string.Empty;
-            WebClient wc = new WebClient();
-            rtn = wc.Execute(url, "get", contenttype);
-            wc = null;
+            HTTPClient cl = new HTTPClient();
+            rtn = cl.Execute(url, "get", contenttype);
+            cl = null;
 
             return rtn;
         }
@@ -71,7 +71,7 @@ namespace Exyus
 
         private static void ReloadCacheFile(string key, object data, CacheItemRemovedReason reason)
         {
-            WebClient wc = new WebClient();
+            HTTPClient cl = new HTTPClient();
             Utility util = new Utility();
 
             string etag = string.Empty;
@@ -93,9 +93,9 @@ namespace Exyus
             }
 
             // make head request
-            wc.Credentials = util.GetSystemCredentials();
-            wc.RequestHeaders.Add(Constants.hdr_cache_control, "no-cache");
-            wc.Execute(url, "head",ctype);
+            cl.Credentials = util.GetSystemCredentials();
+            cl.RequestHeaders.Add(Constants.hdr_cache_control, "no-cache");
+            cl.Execute(url, "head",ctype);
         }
     }
 }
