@@ -16,10 +16,7 @@ namespace Exyus.Web
     [MediaTypes("text/xml")]
     public class XmlFileResource : HTTPResource
     {
-        private Utility util = new Utility();
-        private string rex_notfound = "not found";
-        private string s_ext = string.Empty;
-        private string absoluteUri = string.Empty;
+        // public properties        
         public string FileExtension = ".xml";
         public string PostLocationUri = string.Empty;
         public string UrlPattern = string.Empty;
@@ -31,8 +28,12 @@ namespace Exyus.Web
         public bool RedirectOnPost = false;
         public bool RedirectOnPut = false;
 
-        private string[] mediaTypes = null; 
-
+        // internal vars
+        private string[] mediaTypes = null;
+        private Utility util = new Utility();
+        private string rex_notfound = "not found";
+        private string s_ext = string.Empty;
+        private string absoluteUri = string.Empty;
         Cache ch = new Cache();
 
         public XmlFileResource()
@@ -207,7 +208,7 @@ namespace Exyus.Web
                         throw new FileNotFoundException(string.Format(rex_notfound + " [{0}]", absoluteUri.Replace(s_ext, "")));
 
                     xsl_file = (File.Exists(xslGetResponseContentType) ? xslGetResponseContentType : xslGetResponse);
-                    util.SafeAdd(ref arg_list, "_get-condition", "item");
+                    util.SafeAdd(ref arg_list, "_mode", "item");
                     if (File.Exists(xsl_file))
                     {
                         XslTransformer xslt = new XslTransformer();
@@ -231,7 +232,7 @@ namespace Exyus.Web
                         xmlin.LoadXml(out_text);
 
                         // transform into list
-                        util.SafeAdd(ref arg_list, "_get-condition", "list");
+                        util.SafeAdd(ref arg_list, "_mode", "list");
                         xsl_file = (File.Exists(xslGetResponseContentType) ? xslGetResponseContentType : xslGetResponse);
                         if (File.Exists(xsl_file))
                         {
