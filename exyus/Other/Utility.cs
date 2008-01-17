@@ -207,32 +207,32 @@ namespace Exyus
             return (filetypes[contenttype] != null ? filetypes[contenttype].ToString() : string.Empty);
         }
 
-        public string SetMediaType(Exyus.Web.WebResource wr)
+        public string SetMediaType(Exyus.Web.HTTPResource rs)
         {
-            return SetMediaType(wr, null);
+            return SetMediaType(rs, null);
         }
-        public string SetMediaType(Exyus.Web.WebResource wr, string[] mtypes)
+        public string SetMediaType(Exyus.Web.HTTPResource rs, string[] mtypes)
         {
             string accept = string.Empty;
             string[] mediaTypes;
 
             // override?
-            accept = (wr.Context.Request.QueryString["_accept"] != null ? wr.Context.Request.QueryString["_accept"] : null);
+            accept = (rs.Context.Request.QueryString["_accept"] != null ? rs.Context.Request.QueryString["_accept"] : null);
 
             // check header based on http method
             if (accept == null)
             {
-                switch (wr.Context.Request.HttpMethod.ToLower())
+                switch (rs.Context.Request.HttpMethod.ToLower())
                 {
                     case "head":
                     case "get":
                     case "options":
-                        accept = wr.Context.Request.Headers["accept"];
+                        accept = rs.Context.Request.Headers["accept"];
                         break;
                     case "put":
                     case "post":
                     case "delete":
-                        accept = wr.Context.Request.Headers["content-type"];
+                        accept = rs.Context.Request.Headers["content-type"];
                         break;
                 }
             }
@@ -242,11 +242,11 @@ namespace Exyus
             {
                 try
                 {
-                    mediaTypes = ((MediaTypes)wr.GetType().GetCustomAttributes(typeof(MediaTypes), false)[0]).Types;
+                    mediaTypes = ((MediaTypes)rs.GetType().GetCustomAttributes(typeof(MediaTypes), false)[0]).Types;
                 }
                 catch (Exception ex)
                 {
-                    mediaTypes = new string[] { wr.ContentType };  // assume this is the only one
+                    mediaTypes = new string[] { rs.ContentType };  // assume this is the only one
                 }
             }
             else
@@ -256,17 +256,17 @@ namespace Exyus
 
             // now determine mediatype for this request
             MimeParser mp = new MimeParser(accept);
-            string mtype = mp.GetBestFit(mediaTypes, wr.ContentType);
+            string mtype = mp.GetBestFit(mediaTypes, rs.ContentType);
             if (mtype == string.Empty)
                 throw new HttpException((int)HttpStatusCode.NotAcceptable, HttpStatusCode.NotAcceptable.ToString());
             else
             {
                 // force vary header, conn-neg results in new mime-type
-                if (mtype != wr.ContentType)
-                    wr.Context.Response.AppendHeader("vary", "accept");
+                if (mtype != rs.ContentType)
+                    rs.Context.Response.AppendHeader("vary", "accept");
                 
                 // set the mime-type for this request
-                wr.ContentType = mtype;
+                rs.ContentType = mtype;
             }
 
             // return to caller

@@ -16,7 +16,7 @@ using Exyus.Caching;
 namespace Exyus.Web
 {
     [MediaTypes("text/xml")]
-    public class SqlXmlResource : WebResource
+    public class SqlXmlResource : HTTPResource
     {
         private Utility util = new Utility();
         private string rex_sqex = "Description=\"(.*)\"";
@@ -132,7 +132,7 @@ namespace Exyus.Web
 
             try
             {
-                if (ch.CachedResourceIsValid((WebResource)this))
+                if (ch.CachedResourceIsValid((HTTPResource)this))
                     return;
 
                 // ok, let's try to build a new one
@@ -171,7 +171,7 @@ namespace Exyus.Web
                     }
 
                     // handle caching of this resource
-                    ch.CacheResource((WebResource)this,util.FixEncoding(xmlout.OuterXml));
+                    ch.CacheResource((HTTPResource)this,util.FixEncoding(xmlout.OuterXml));
                 }
                 else
                     throw new HttpException(500, "missing transform");

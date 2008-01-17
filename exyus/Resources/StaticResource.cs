@@ -8,7 +8,7 @@ using Exyus.Caching;
 namespace Exyus.Web
 {
     [MediaTypes("text/html")]
-    public class StaticResource : WebResource
+    public class StaticResource : HTTPResource
     {        
         Utility util = new Utility();
         Cache ch = new Cache();
@@ -65,7 +65,7 @@ namespace Exyus.Web
             try
             {
                 // return cached copy, if you can
-                if (ch.CachedResourceIsValid((WebResource)this))
+                if (ch.CachedResourceIsValid((HTTPResource)this))
                     return;
 
                 // load and parse the content
@@ -77,7 +77,7 @@ namespace Exyus.Web
                 }
 
                 // cache the resource, if appropriate
-                ch.CacheResource((WebResource)this, out_text);
+                ch.CacheResource((HTTPResource)this, out_text);
             }
             catch (HttpException hex)
             {
