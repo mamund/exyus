@@ -1,0 +1,3 @@
+#summary Exyus Tips and Tricks
+
+  * Using Exyus to do a [RecordLookupExample 'record look-up']
