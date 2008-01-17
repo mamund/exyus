@@ -37,7 +37,7 @@ namespace Exyus.Caching
                     // use validation caching
                     if (rs.UseValidationCaching == true)
                     {
-                        rs.EntityTag = string.Format("\"{0}\"", co.ETag);
+                        rs.EntityTag = string.Format("\"{0}\"", co.Etag);
                         rs.LastModified = co.LastModified;
                     }
                 }
@@ -57,7 +57,7 @@ namespace Exyus.Caching
             // check for not-modified
             if (co != null && Return304(rs.Context,co))
             {
-                rs.EntityTag = string.Format("\"{0}\"",co.ETag);
+                rs.EntityTag = string.Format("\"{0}\"",co.Etag);
                 rs.Expires = co.Expires;
                 rs.LastModified = co.LastModified;
                 rs.StatusCode = HttpStatusCode.NotModified;
@@ -77,13 +77,13 @@ namespace Exyus.Caching
                 // use validation caching
                 if (rs.UseValidationCaching == true)
                 {
-                    rs.EntityTag = string.Format("\"{0}\"",co.ETag);
+                    rs.EntityTag = string.Format("\"{0}\"",co.Etag);
                     rs.LastModified = co.LastModified;
                 }
 
                 rs.Response = util.FixEncoding(co.Payload);
                 rs.ContentType = co.ContentType;
-                rs.Context.Response.AppendHeader(Constants.hdr_ExyusCache, co.ETag);
+                rs.Context.Response.AppendHeader(Constants.hdr_ExyusCache, co.Etag);
 
                 return true;
             }
@@ -114,7 +114,7 @@ namespace Exyus.Caching
                 util.GetConfigSectionItem(Constants.cfg_exyusSettings,Constants.cfg_rootfolder)
                 );
 
-            // do the immeidate cache invalidations on the current thread
+            // do the immiedate cache invalidations on the current thread
             // NOTE: long list will slow the response of the app
             if (immediateUriTemplates != null)
             {
@@ -139,6 +139,7 @@ namespace Exyus.Caching
 
             // do the background invalidations on a diff thread
             // good for updating the cache of archive and other non-essential resources
+            // NOTE: in a heavy trffic mode, can this starve the thread pool?
             if (backgroundUriTemplates != null)
             {
                 // build list of absolute uri
@@ -296,7 +297,7 @@ namespace Exyus.Caching
             if (
                 ctx.Request.Headers[Constants.hdr_if_none_match] != null 
                 && 
-                string.Format("\"{0}\"",co.ETag) == ctx.Request.Headers[Constants.hdr_if_none_match]
+                string.Format("\"{0}\"",co.Etag) == ctx.Request.Headers[Constants.hdr_if_none_match]
                 )
                 return true;
 
@@ -304,7 +305,7 @@ namespace Exyus.Caching
             if (
                 ctx.Request.Headers[Constants.hdr_if_none_match] != null 
                 &&
-                string.Format("\"{0}\"", co.ETag) != ctx.Request.Headers[Constants.hdr_if_none_match]
+                string.Format("\"{0}\"", co.Etag) != ctx.Request.Headers[Constants.hdr_if_none_match]
                 )
                 return false;
 

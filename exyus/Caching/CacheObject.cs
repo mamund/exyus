@@ -22,12 +22,15 @@ namespace Exyus.Caching
             set { _contenttype = value; }
         }
 
+        // will cause sliding caching expiration
         public int LocalMaxAge
         {
             get { return _localmaxage; }
             set { _localmaxage = value; }
         }
 
+        // will use aboslute caching expiration
+        // NOTE: overridden by LocalMaxAge!
         public int MaxAge
         {
             get { return _maxage; }
@@ -45,12 +48,13 @@ namespace Exyus.Caching
             set { _lastmodified = value; }
         }
 
-        public string ETag
+        public string Etag
         {
             get { return _etag; }
             set { _etag = value; }
         }
 
+        // the actual string-pile/content to cache
         public string Payload
         {
             get { return _payload; }

@@ -25,7 +25,7 @@ namespace Exyus
         public const string hdr_if_unmodified_since = "If-Unmodified-Since";
         public const string hdr_if_none_match = "If-None-Match";
         public const string hdr_if_match = "If-Match";
-        public const string hdr_etag = "ETag";
+        public const string hdr_etag = "Etag";
         public const string hdr_cache_control = "Cache-Control";
         public const string hdr_expires = "Expires";
         public const string hdr_exyus = "X-Exyus";
