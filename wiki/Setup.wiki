@@ -1,0 +1,23 @@
+#summary Setting up Exyus on Windows.
+
+==Requirements==
+Below are the requirements for successfully setting up this version of *Exyus*:
+  * Windows XP, Windows 2003, or Windows Vista (not tested)
+  * Internet Information Server 6.0 (IIS) installed
+  * [http://www.microsoft.com/downloads/details.aspx?FamilyID=0856EACB-4362-4B0D-8EDD-AAB15C5E04F5&displaylang=en ASP.NET Framework 2.0]
+  * [http://www.isapirewrite.com/ ISAPI_Rewrite 2.0]
+
+==Installing Exyus==
+Once the prerequisite items are installed, you can move on to setting up *Exyus*. Below is the recommended process:
+===Set up the File Space===
+  * Create a folder on disk to hold the *Exyus* web ({{{c:\exyus\}}})
+  * Copy the contents of the "exyus_runtime" zip set into the target directory
+===Configure IIS===
+For these next steps, use the IIS Management Tool
+  * Create a new VDir called "xcs" that points to the target folder ({{{c:\exyus\}}})
+  * Open the Properties window for this new VDir and on the Virtual Directory tab, make sure to set this folder  with an "Application Name" (Exyus)
+  * Click on the "Configuration" button. On the "Mappings" tab, click the "Add" button. Browse to the ASP.NET 2.0 DLL; enter {{{.xcs}}} as the extention; select "All Verbs" radio; check ON "Script Engine"; check OFF "Check that file exists" and press "OK" to save your changes.
+  * On the Directory Security Tab, Anonymous Acces... section select "Edit" button. When the dialog pops up, make sure only "Anonymous Access" is selected. Do not use Digest, Basic, or Integrated security
+  * Press OK to save your changes for the root folder.
+  * In the folder list for this VDir, right-click on the "storage" folder and select "Properties" from the context menu.
+  * On the "Directory" tab, check ON "Write" radio button and press "OK" to save your changes.
