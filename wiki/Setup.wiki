@@ -13,6 +13,9 @@ Once the prerequisite items are installed, you can move on to setting up *Exyus*
 ===Set up the File Space===
   * Create a folder on disk to hold the *Exyus* web ({{{c:\exyus\}}})
   * Copy the contents of the "exyus_runtime" zip set into the target directory
+  * Locate the Storage folder and right click to get the context menu. Select "Properties" 
+  * On the "Security" tab, highlight the "Users" group and check ON the "Modify" box.
+  * Click "Apply" and "OK" to save your changes and close the dialog.
 ===Configure IIS===
 For these next steps, use the IIS Management Tool
   * Create a new VDir called "xcs" that points to the target folder ({{{c:\exyus\}}})
@@ -24,7 +27,7 @@ For these next steps, use the IIS Management Tool
   * On the "Directory" tab, check ON "Write" radio button and press "OK" to save your changes.
 ===Edit the Exyus web.config===
 For these steps, open the {{{web.config}}} file in the root folder for editing.
-  * in the {{{exyusSecurity}}} section, update the {{{systemUser}}} item to reflect your own *system-wide* username;password
+  * In the {{{exyusSecurity}}} section, update the {{{systemUser}}} item to reflect your own *system-wide* username;password
   * Save and close to file
 ===Edit the Exyus config files===
 a subfolder of the application (config} contains additional configuration files used by *Exyus* to control user access, representation mapping, and URL redirect/rewrites. 
@@ -41,5 +44,12 @@ RewriteRule .*(?:/config/|/documents/|/storage/).* [F,I,O]
 RewriteRule (.*)/xcs/([^.?]*)(?:\.xcs)?(\?.*)? $1/xcs/$2.xcs$3 [L,I]
 # end exyus rules
 }}}
+===Configure Samples===
+To get the samples (included with the exyus_runtime.zip) to work, you need to make an addition to the {{{web.config}}} file.
+   * Open the {{{web.config}}} at the root
+   * in the {{{htpHandlers}}} section add the following. Save and close the file.
+{{{
+<add verb="*" path="*.samples" type="Exyus.Samples.StaticExamples.samplesRoot,Exyus.Samples"/>
+}}}  
 ===Test the Setup===
 Once you have completed all the steps, open your browser to view the Samples application: ({{{http://localhost/xcs/samples/}}}). You should see a short list of test pages that you can view.
