@@ -1,5 +1,5 @@
 #summary Setting up Exyus on Windows.
-#labels Phase-Deploy
+#labels Phase-Deploy,Featured
 
 ==Requirements==
 Below are the requirements for successfully setting up this version of *Exyus*:
