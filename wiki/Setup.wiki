@@ -1,4 +1,5 @@
 #summary Setting up Exyus on Windows.
+#labels Phase-Deploy
 
 ==Requirements==
 Below are the requirements for successfully setting up this version of *Exyus*:
@@ -21,3 +22,24 @@ For these next steps, use the IIS Management Tool
   * Press OK to save your changes for the root folder.
   * In the folder list for this VDir, right-click on the "storage" folder and select "Properties" from the context menu.
   * On the "Directory" tab, check ON "Write" radio button and press "OK" to save your changes.
+==Edit the Exyus web.config==
+For these steps, open the {{{web.config}}} file in the root folder for editing.
+  * in the {{{exyusSecurity}}} section, update the {{{systemUser}}} item to reflect your own *system-wide* username;password
+  * Save and close to file
+===Edit the Exyus config files===
+a subfolder of the application (config} contains additional configuration files used by *Exyus* to control user access, representation mapping, and URL redirect/rewrites. 
+  * Open the {{{auth-users.xml}}} file to update the list of authorized users
+  * Update the first user in the file (that is named "exyus") to the user and password you used in the {{{systemUser}}} setting of the {{{web.config}}}.
+  * Save and close the file.
+===Configure ISAP_Rewrite===
+This version of *Exyus* was built to use ISAPI_Rewrite 2.0. Once you have installed it, you need to set two rules to handle default *Exyus* requests.
+  * Open the {{{httpd.ini}}} file in a text editor
+  * After entering the following two rules, save and close the file.
+{{{
+# start support for exyus server
+RewriteRule .*(?:/config/|/documents/|/storage/).* [F,I,O]
+RewriteRule (.*)/xcs/([^.?]*)(?:\.xcs)?(\?.*)? $1/xcs/$2.xcs$3 [L,I]
+# end exyus rules
+}}}
+===Test the Setup===
+Once you have completed all the steps, open your browser to view the Samples application: ({{{http://localhost/xcs/samples/}}}). You should see a short list of test pages that you can view.
