@@ -22,7 +22,7 @@ For these next steps, use the IIS Management Tool
   * Press OK to save your changes for the root folder.
   * In the folder list for this VDir, right-click on the "storage" folder and select "Properties" from the context menu.
   * On the "Directory" tab, check ON "Write" radio button and press "OK" to save your changes.
-==Edit the Exyus web.config==
+===Edit the Exyus web.config===
 For these steps, open the {{{web.config}}} file in the root folder for editing.
   * in the {{{exyusSecurity}}} section, update the {{{systemUser}}} item to reflect your own *system-wide* username;password
   * Save and close to file
