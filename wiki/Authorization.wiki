@@ -28,4 +28,4 @@ Below is an example {{{config/auth-users.xml}}} file:
 ===Permissions===
 *Exyus* handles authorization by mapping URLs and HTTP Methods for the logged-in user. The URLs in the {{{auth-users.xml}}} file correspond to entries in the {{{auth-urls.xml}}} file. For each {{{permission}}} entry, one or more HTTP methods are added. If a method appears for that {{{permission}}} element, the user is granted rights to perform that action at the corresponding URL.
 
-The current list of methods understood by *Exyus* are {{{GET, HEAD, POST, PUT, DELETE, and OPTION}}}. In addition, there are two other valid values for the {{{method}}} attribute.: 1) '*' which grants rights to all methods for that URL; and 2) '!' which revokes rights for all methods for that URL.
+The current list of methods understood by *Exyus* are {{{GET, HEAD, POST, PUT, DELETE, and OPTION}}}. In addition, there are two other valid values for the {{{method}}} attribute.: 1) {{{*}}} which grants rights to all methods for that URL; and 2) {{{!}}} which revokes rights for all methods for that URL.
