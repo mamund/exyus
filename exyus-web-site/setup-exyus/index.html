@@ -2,22 +2,31 @@
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 	<head>
-		<title>Install Exyus</title>
-		<style type="text/css">
-		</style>
+		<title>Setup</title>
 		<base href="http://exyus.com/setup-exyus/" />
+		<link type="text/css" href="/css/site.css" rel="stylesheet" />
 	</head>
 	<body>
 		<div id="header">
-			<ul>
-				<li><a href="../" title="Home">Home</a></li>
-				<li><a href="/setup-exyus/" title="Install Exyus">Install Exyus</a></li>
-				<li><a href="/xcs/samples/" title="Samples">Samples</a></li>
-			</ul>
+			<div id="logo">
+				<a href="/" title="Home">
+					<h1>Exyus</h1>
+			</a>
+			</div>
+			<div id="menu">
+				<ul>
+					<li><a href="../" title="Home">Home</a></li>
+					<li><a href="/setup-exyus/" title="Setup Exyus">Setup</a></li>
+					<li><a href="/samples/" title="Samples">Samples</a></li>
+					<li><a href="/external/" title="Source Code">Source</a></li>
+					<li><a href="/about/" title="About">About</a></li>
+				</ul>
+			</div>
+			<div id="block"></div>
 		</div>
 
 		<div id="content">
-			<h1>Setup Exyus</h1>
+			<h1>Setup</h1>
 			<p>
 				This document outlines the details for setting up the most recent version of <strong>Exyus</strong>.
 			</p>
@@ -154,10 +163,22 @@ RewriteRule (.*)/xcs/([^.?]*)(?:\.xcs)?(\?.*)? $1/xcs/$2.xcs$3 [L,I]
 			<p>You should see a list of links to other pages in the sample application.</p>
 		</div>
 		<div id="footer">
-			<ul>
-				<li><a href="http://code.google.com/p/exyus/" title="Exyus @ GoogleCode">Exyus @ GoogleCode</a></li>
-				<li><a href="http://groups.google.com/group/exyus" title="Exyus @ Google Groups">Exyus @ Google Groups</a></li>
-			</ul>
+				<ul>
+					<li><a href="../" title="Home">Home</a></li>
+					<li><a href="/setup-exyus/" title="Setup Exyus">Setup</a></li>
+					<li><a href="/samples/" title="Samples">Samples</a></li>
+					<li><a href="/external/" title="Source Code">Source</a></li>
+					<li><a href="/about/" title="About">About</a></li>
+				</ul>
 		</div>
+		<script type="text/javascript">
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+		</script>
+		<script type="text/javascript">
+		var pageTracker = _gat._getTracker("UA-2399548-2");
+		pageTracker._initData();
+		pageTracker._trackPageview();
+		</script>
 	</body>
 </html>
