@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+	<head>
+		<title>Install Exyus</title>
+		<style type="text/css">
+		</style>
+		<base href="http://exyus.com/setup-exyus/" />
+	</head>
+	<body>
+		<div id="header">
+			<ul>
+				<li><a href="../" title="Home">Home</a></li>
+				<li><a href="/setup-exyus/" title="Install Exyus">Install Exyus</a></li>
+				<li><a href="/xcs/samples/" title="Samples">Samples</a></li>
+			</ul>
+		</div>
+
+		<div id="content">
+			<h1>Setup Exyus</h1>
+			<p>
+				This document outlines the details for setting up the most recent version of <strong>Exyus</strong>.
+			</p>
+			<h2>Requirements</h2>
+			<p>
+				There are very few requirements for installing and running <strong>Exyus</strong>. 
+				<ul>
+					<li>Windows XP, Windows 2003, Windows Vista (not yet tested)</li>
+					<li>Internet Information Server 6.0</li>
+					<li><a href="http://www.microsoft.com/downloads/details.aspx?FamilyID=0856EACB-4362-4B0D-8EDD-AAB15C5E04F5&displaylang=en" title="ASP.NET 2.0">ASP.NET 2.0</a></li>
+					<li><a href="http://www.isapirewrite.com/" title="ISAPI Rewrite 2.0">ISAPI Rewrite 2.0</a></li>
+				</ul>
+			</p>
+			<p><strong>Exyus</strong> also uses the <a href="http://www.codeplex.com/MVPXML" title="MVP XML">MVP XML Project</a>.</p>
+			<h2>Install</h2>
+			<p>
+				Installing <strong>Exyus</strong> is relatively straight-forward. The current version installs with some sample
+				files that you can use to confirm the installation is working properly.
+			</p>
+			<h3>Setup File Space</h3>
+			<p>
+				The first step is to copy the physical <strong>Exyus</strong> runtime files onto the server. You 
+				also need to set up initial file rights for the folders within the runtime folder tree.
+			</p>
+			<ol>
+				<li>Create a folder to hold the <strong>Exyus</strong> runtime files (<code>c:\exyus\</code>)</li>
+				<li>Copy the <a href="http://exyus.googlecode.com/files/exyus_runtime.zip" title="exyus runtime zip set"><code>exyus_runtime.zip</code></a>
+				to the target server and expand the ZIP archive into the folder you created in step 1 (<a href="figures.html#ftp-exyus-runtime-to-server" title="ftp-exyus-runtime-to-server" target="_blank">Figure 1</a>)</li>
+				<li>Set the user access for the <code>storage</code> folder (<a href="figures.html#grant-users-mod-rights-to-storage" title="grant-users-mod-rights-to-storage" target="_blank">Figure 2</a>)
+					<ol>
+						<li>After expanding the folders from the archive into the target folder, locate the <code>storage</code> folder.</li>
+						<li>Right-click on the folder and select the "Proeprties" item from the context menu.</li>
+						<li>On the "Security" tab, highlight the "Users" group and then check ON the "Modify" checkbox.</li>
+						<li>Click "Apply" and "OK" to save the changes and close the dialog box.</li>
+					</ol>
+			</ol>
+			<h3>Configure IIS</h3>
+			<p>
+				For this series of steps, you need to use the Internet Information Services Manager.
+			</p>
+			<ol>
+				<li>Create the XCS Virtual Directory (<a href="figures.html#create-vdir" title="create-vdir" target="_blank">Figure 3</a>)
+					<ol>
+						<li>Open the IIS Manager and expand the tree to find the root of your web server.</li>
+						<li>Right-click over the root of the web and select "New..." and "Virtual Directory" from the context menu.</li>
+						<li>Walk through the Virtual Directory Creation Wizard and create a VDir called "<code>xcs</code>" that 
+								points to the physical folder you created when you set up the <strong>Exyus</strong> file space. Be sure to check ON the "Run Scripts" checkbox.</li>
+					</ol>
+				</li>
+				<li>
+					Set the Application Name (<a href="figures.html#mark-root-folder-as-application" title="mark-root-folder-as-application" target="_blank">Figure 4</a>)<br />
+					Right-click on the <code>xcs</code> folder and press the "Create" button 
+					to mark the root folder as an application. 
+				</li>
+				<li>Set up URL Mapping (<a href="figures.html#add-extension-mapping" title="add-extension-mapping" target="_blank">Figure 5</a>)
+					<ol>
+						<li>Right-click on the <code>xcs</code> folder and select "Properties" from the context menu</li>
+						<li>On the "Virtual Directory" tab, click on the "Configuration" button.</li>
+						<li>On the "Application Configuration" dialog, select the "Mappings" tab.</li>
+						<li>Click on the "Add" button to call up the "Add/Edit Application Extension Mapping" dialog.</li>
+						<li>Enter the location of the ASP.NET 2.0 DLL in the "Executable" input box (<code>mark-root-folder-as-application</code>)</li>
+						<li>Enter "<code>.xcs</code>" in the "Extension" input box.</li>
+						<li>Check ON the "All Verbs" radio</li>
+						<li>Check ON the "Scrtipt Engine" check box</li>
+						<li>Check OFF the "Check that file exists" check box.</li>
+						<li>Click "OK" three times to save your changes and close all the open dialog boxes.</li>
+					</ol>
+				</li>
+				<li>Set Security Access for the <code>xcs</code> folder (<a href="figures.html#mark-root-security-anonymous-only" title="mark-root-security-anonymous-only" target="_blank">Figure 6</a>)
+					<ol>
+						<li>Right-click over the <code>xcs</code. folder and select "Properties" from the context menu</li>
+						<li>Click on the "Directory Security" tab</li>
+						<li>In the "Anonymous access and authentication control" section, click on the "Edit" button.</li>
+						<li>Make sure only the "Anonymous Access" check box is checked ON. All other checkboxes should be checked OFF.</li>
+					</ol>
+				</li>
+			</ol>
+			<h3>Edit Configuration Files</h3>
+			<p>
+				In this step, you need to edit several configuration files with a simple text editor.
+			</p>
+			<ol>
+				<li>Edit the <code>web.config</code> file (<a href="figures.html#update-web-config-with-system-user" title="update-web-config-with-system-user" target="_blank">Figure 7</a>)</li>
+					<ol>
+						<li>Using the File Explorer, locate the <code>web.config</code> file in the <code>xcs</code> folder.</li>
+						<li>Open the <code>web.config</code> file with a text editor</li>
+						<li>Locate the <code>&lt;systemUser&gt;</code> element in the <code>&lt;exyusSecurity&gt; section.</li>
+						<li>Edit the value in this element to contain your own personal username and password.</li>
+						<li>Save the changes and close the editor.</li>
+					</ol>
+				</li>
+				<li>Edit the <code>auth-users.xml</code> configuraiton file (<a href="figures.html#update-auth-users-with-system-password" title="update-auth-users-with-system-password" target="_blank">Figure 8</a>)
+					<ol>
+						<li>Using File Explorer, navigate to the <code>/config/</code> subfolder at the root of the web.</li>
+						<li>Open the <code>auth-users.xml</code> configuration file.</li>
+						<li>Update the first user in the file (<code>exyus</code>) by replacing the <code>user</code> and <code>password</code>
+							attributes with the values you entered in the <code>systemUser</code> element of the <code.web.config</code> file.</li>
+						<li>Save your changes and close the file.</li>
+					</ol>
+				</li>
+			</ol>
+			<h3>Configure ISAPI_Rewrite</h3>
+			<p>
+				The <a href="" title="">ISAPI_Rewirte</a> tool is a third-party utility that works very much like
+				the mod_rewrite tool for Apache servers. While no strictly required, this version of <strong>Exyus</strong> assumes that a URL
+				rewriter is installed. You can download a free (for personal use) verison of the ISAPI_Rewrite tool and
+				install it on your server. This section walks you through the details of adding rewrite rules needed
+				for <strong>Exyus</strong> to work properly.
+			</p>
+			<ol>
+				<li>Open the <code>httpd.ini</code> file for editing (<a href="figures.html#setup-isapi-rewrite" title="setup-isapi-rewrite" target="_blank">Figure 9</a>)</li>
+				<li>add the following two rules to the <code>httpd.ini</code> file:<br />
+					<pre><code># start exyus rules
+RewriteRule .*(?:/config/|/documents/|/storage/).* [F,I,O]
+RewriteRule (.*)/xcs/([^.?]*)(?:\.xcs)?(\?.*)? $1/xcs/$2.xcs$3 [L,I]
+# end exyus rules</code></pre>
+				</li>
+				<li>Save the changes and close the file.</li>
+			</ol>
+			<h3>Configure Samples</h3>
+			<p>This installation of <strong>Exyus</strong> comes with a set of samples that you can use to 
+				confirm the runtime is properly installed. All you need to do is make sure the samples are referenced
+				in the <code>web.config</code> at the root of the application.
+			</p>
+			<ol>
+				<li>Open and edit <code>web.config</code> at the root of the <code>xcs</code> site (<a href="figures.html#add-samples-to-web-config" title="add-samples-to-web-config" target="_blank">Figure 10</a>)</li>
+				<li>In the &lt;httpHandlers&gt; section, make sure the following element is added:
+					<pre><code>&lt;add verb="*" path="*.samples" type="Exyus.Samples.StaticExamples.samplesRoot,Exyus.Samples"/&gt;</code></pre>
+				</li>
+				<li>Save the changes and close the file.</li>
+			</ol>
+			<p>You can test your installation by pointing your web brower to the following URL:</p>
+			<code>http://localhost/xcs/samples/</code>
+			<p>You should see a list of links to other pages in the sample application.</p>
+		</div>
+		<div id="footer">
+			<ul>
+				<li><a href="http://code.google.com/p/exyus/" title="Exyus @ GoogleCode">Exyus @ GoogleCode</a></li>
+				<li><a href="http://groups.google.com/group/exyus" title="Exyus @ Google Groups">Exyus @ Google Groups</a></li>
+			</ul>
+		</div>
+	</body>
+</html>
