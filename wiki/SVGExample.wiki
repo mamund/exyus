@@ -3,6 +3,7 @@
 It's easy to use *Exyus* to deliver SVG documents. It's just a matter of linking your existing SVG documents to an *Exyus* resource. Below is a quick example.
 
 ====Create an SVG Document====
+{{{
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" 
  "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
 
@@ -25,8 +26,9 @@ It's easy to use *Exyus* to deliver SVG documents. It's just a matter of linking
 <text x='60' y='250' fill='blue'>Hello, World!</text>
 
 </svg>
-
+}}}
 ====Define an Exyus Resource====
+{{{
 // return static svg document
 [UriPattern(@"/samples/svg/(?:\.xcs)")]
 [MediaTypes("image/svg+xml")]
@@ -38,5 +40,5 @@ public class svgHello : StaticResource
         this.Content = Helper.ReadFile("/xcs/content/samples/hello.svg");
     }
 }
-
+}}}
 That's all there is to it. You can view a liver version of this resource by pointing an SVG-compliant browser [http://exyus.com/xcs/samples/svg/ here].
