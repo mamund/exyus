@@ -2,3 +2,4 @@
 #labels Featured
 
   * Using Exyus to do a [RecordLookupExample 'record look-up']
+  * Delivering [SVGExample SVG Documents]
