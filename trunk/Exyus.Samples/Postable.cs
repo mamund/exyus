@@ -13,7 +13,6 @@ namespace Exyus.Samples.Postable
             public postPages()
             {
                 this.ContentType = "text/html";
-                this.UpdateMediaTypes = new string[] { "text/html" };
                 this.AllowPost = true;
                 this.RedirectOnPost = true;
                 this.AllowCreateOnPut = false;
