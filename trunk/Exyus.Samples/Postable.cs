@@ -16,7 +16,7 @@ namespace Exyus.Samples.Postable
                 this.AllowPost = true;
                 this.RedirectOnPost = true;
                 this.AllowCreateOnPut = false;
-                this.PostLocationUri = "/postable/";
+                this.PostLocationUri = "/postable/{id}";
                 this.DocumentsFolder = "~/documents/postable/";
                 this.StorageFolder = "~/storage/postable/";
                 this.XHtmlNodes = new string[] { "//body" };
