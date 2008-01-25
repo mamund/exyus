@@ -374,7 +374,8 @@ namespace Exyus.Web
 
                 // redirect to created item
                 this.StatusCode = (this.RedirectOnPost?HttpStatusCode.Redirect:HttpStatusCode.Created);
-                this.Location = util.GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_rootfolder) + util.ReplaceArgs(this.PostLocationUri, arg_list) + id;
+                this.Location = util.GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_rootfolder) + util.ReplaceArgs(this.PostLocationUri.Replace("{id}",id), arg_list);
+
                 // if we were using form-posting, reset to preferred content type (text/html, most likely)
                 if (this.ContentType == Constants.cType_FormUrlEncoded)
                     this.ContentType = original_contentType;
@@ -455,7 +456,6 @@ namespace Exyus.Web
                     xmlin = util.ProcessFormVars(this.Context.Request.Form);
                 else
                     xmlin.Load(this.Context.Request.InputStream);
-                xmlin.Load(this.Context.Request.InputStream);
 
                 // validate the doc
                 if (File.Exists(XsdFile))
