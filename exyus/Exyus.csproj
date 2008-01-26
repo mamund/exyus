@@ -47,6 +47,7 @@
     <Compile Include="Other\Helper.cs" />
     <Compile Include="Mime\MediaTypesAttribute.cs" />
     <Compile Include="Mime\MimeParser.cs" />
+    <Compile Include="Resources\PlainTextViewer.cs" />
     <Compile Include="Security\Authentication.cs" />
     <Compile Include="Security\ExyusIdentity.cs" />
     <Compile Include="Security\ExyusPrincipal.cs" />
