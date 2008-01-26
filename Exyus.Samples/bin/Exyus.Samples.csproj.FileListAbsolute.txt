@@ -1,0 +1,10 @@
+C:\Projects\Exyus\google-svn\trunk\Exyus.Samples\bin\Debug\Exyus.Samples.dll
+C:\Projects\Exyus\google-svn\trunk\Exyus.Samples\bin\Debug\Exyus.Samples.pdb
+C:\Projects\Exyus\google-svn\trunk\Exyus.Samples\bin\Debug\Exyus.dll
+C:\Projects\Exyus\google-svn\trunk\Exyus.Samples\bin\Debug\Mvp.Xml.dll
+C:\Projects\Exyus\google-svn\trunk\Exyus.Samples\bin\Debug\Mvp.Xml.pdb
+C:\Projects\Exyus\google-svn\trunk\Exyus.Samples\bin\Debug\Mvp.Xml.xml
+C:\Projects\Exyus\google-svn\trunk\Exyus.Samples\bin\Debug\Exyus.pdb
+C:\Projects\Exyus\google-svn\trunk\Exyus.Samples\obj\Debug\ResolveAssemblyReference.cache
+C:\Projects\Exyus\google-svn\trunk\Exyus.Samples\obj\Debug\Exyus.Samples.dll
+C:\Projects\Exyus\google-svn\trunk\Exyus.Samples\obj\Debug\Exyus.Samples.pdb
