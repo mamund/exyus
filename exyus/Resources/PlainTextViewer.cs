@@ -20,33 +20,30 @@ namespace Exyus.Web
 
         public override void Get()
         {
-            string results = string.Empty;
+            // validate media type (may throw 416 error)
+            util.SetMediaType(this, mediaTypes);
 
             // handle args
             string f = (this.Context.Request["f"] != null ? this.Context.Request["f"] : string.Empty);
+
             if (f == string.Empty)
                 throw new HttpException(400, "Missing argument [f]");
 
-            // validate media type (may throw 416 error)
-            util.LookUpFileType(util.SetMediaType(this, mediaTypes));
-
             // check cache first
             if (ch.CachedResourceIsValid((HTTPResource)this))
-                return;
-
-            if (Files.ContainsKey(f))
             {
-                results = Helper.ReadFile(Files[f].ToString());
+                return;
             }
-            else
+
+            // make sure it's a valid item
+            if (!Files.ContainsKey(f))
             {
                 throw new HttpException(400, "Invalid argument [f]");
             }
 
-            // post results cache
+            // do the work
+            string results = Helper.ReadFile((string)Files[f]);
             ch.CacheResource((HTTPResource)this, results);
-
-            // return results
             this.Response = results;
         }
     }
