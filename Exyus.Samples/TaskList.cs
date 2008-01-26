@@ -5,6 +5,14 @@
 using System;
 using Exyus.Web;
 
+/*********************************************************************
+ * TASKLIST.CS
+ * 
+ * Define an HTTP resource that supports:
+ * - HTML and XML content-types
+ * - GET(item/list), POST, PUT(update-only), DELETE
+ * 
+ */ 
 namespace Exyus.Samples
 {
     [UriPattern(@"/tasklist/(?<taskid>[^/?]*)?(?:\.xcs)(?:.*)?")]
@@ -13,20 +21,33 @@ namespace Exyus.Samples
     {
         public TaskList()
         {
+            // set default type and caching
             this.ContentType = "text/html";
+            this.LocalMaxAge = 600;
+
+            // set rules on interactions
             this.AllowPost = true;
             this.RedirectOnPost = true;
             this.AllowCreateOnPut = false;
+
+            // set client-side post target
             this.PostLocationUri = "/tasklist/";
+
+            // set server-side locations
             this.DocumentsFolder = "~/documents/tasklist/";
             this.StorageFolder = "~/storage/tasklist/";
+            
+            // set xhtml validation nodes
             this.XHtmlNodes = new string[] { "//name" };
-            this.LocalMaxAge = 600;
+            
+            // set supported post/put types
             this.UpdateMediaTypes = new string[] 
                 {
                     "application/x-www-form-urlencoded",
                     "text/xml" 
                 };
+            
+            // set cache invalidation rules
             this.ImmediateCacheUriTemplates = new string[]
                 {
                     "/tasklist/.xcs",
