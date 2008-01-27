@@ -25,6 +25,11 @@ namespace Exyus.Samples
             this.Files.Add("post_form.xsd", "/xcs/documents/tasklist/post_form.xsd");
             this.Files.Add("post_xml.xsd", "/xcs/documents/tasklist/post_xml.xsd");
             this.Files.Add("put_xml.xsd", "/xcs/documents/tasklist/put_xml.xsd");
+            this.Files.Add("tasklist-markup.html", "/xcs/documents/tasklist/source/tasklist-markup.html");
+            this.Files.Add("tasklist-minimal.html", "/xcs/documents/tasklist/source/tasklist-minimal.html");
+            this.Files.Add("get-xml-list.txt", "/xcs/documents/tasklist/source/get-xml-list.txt");
+            this.Files.Add("get-xml-item.txt", "/xcs/documents/tasklist/source/get-xml-item.txt");
+            this.Files.Add("post-xml-error.txt", "/xcs/documents/tasklist/source/post-xml-error.txt");
         }
 
     }
