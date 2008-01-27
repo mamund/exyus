@@ -12,9 +12,10 @@ using Exyus.Web;
  * - HTML and XML content-types
  * - GET(item/list), POST, PUT(update-only), DELETE
  * 
- */ 
+ *********************************************************************/ 
 namespace Exyus.Samples
 {
+    // set uri pattern matching and supported media types
     [UriPattern(@"/tasklist/(?<taskid>[^/?]*)?(?:\.xcs)(?:.*)?")]
     [MediaTypes("text/html","text/xml")]
     class TaskList : XmlFileResource
