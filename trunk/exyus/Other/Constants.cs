@@ -71,6 +71,7 @@ namespace Exyus
         public const string cfg_authRealm = "authRealm";
         public const string cfg_sendSessionCookies = "send-session-cookies";
         public const string cfg_sendUserCookies = "send-user-cookies";
+        public const string cfg_logExyusUser = "log-exyus-user";
 
         // misc
         public const string msc_sys_file_ext = ".xcs";

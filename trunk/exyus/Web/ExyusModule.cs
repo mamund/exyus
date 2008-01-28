@@ -172,6 +172,11 @@ namespace Exyus.Web
 
                     System.Threading.Thread.CurrentPrincipal = ep;
                     app.Context.User = ep;
+
+                    if (util.GetConfigSectionItem(Constants.cfg_exyusSecurity, Constants.cfg_logExyusUser) != "false")
+                    {
+                        app.Context.Response.AppendToLog(string.Format(" [exyus-user={0}]", user));
+                    }
                 }
                 else
                 {
