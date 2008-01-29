@@ -1,0 +1,10 @@
+C:\Projects\Exyus\google-svn\trunk\tasklist-cmd\tasklist-cmd\bin\Debug\tasklist-cmd.exe
+C:\Projects\Exyus\google-svn\trunk\tasklist-cmd\tasklist-cmd\bin\Debug\tasklist-cmd.pdb
+C:\Projects\Exyus\google-svn\trunk\tasklist-cmd\tasklist-cmd\bin\Debug\Exyus.dll
+C:\Projects\Exyus\google-svn\trunk\tasklist-cmd\tasklist-cmd\bin\Debug\Mvp.Xml.dll
+C:\Projects\Exyus\google-svn\trunk\tasklist-cmd\tasklist-cmd\bin\Debug\Exyus.pdb
+C:\Projects\Exyus\google-svn\trunk\tasklist-cmd\tasklist-cmd\bin\Debug\Mvp.Xml.pdb
+C:\Projects\Exyus\google-svn\trunk\tasklist-cmd\tasklist-cmd\bin\Debug\Mvp.Xml.xml
+C:\Projects\Exyus\google-svn\trunk\tasklist-cmd\tasklist-cmd\obj\Debug\ResolveAssemblyReference.cache
+C:\Projects\Exyus\google-svn\trunk\tasklist-cmd\tasklist-cmd\obj\Debug\tasklist-cmd.exe
+C:\Projects\Exyus\google-svn\trunk\tasklist-cmd\tasklist-cmd\obj\Debug\tasklist-cmd.pdb
