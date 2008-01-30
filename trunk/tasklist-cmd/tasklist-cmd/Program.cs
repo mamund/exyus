@@ -1,3 +1,13 @@
+/*
+ * tasklist-cmd
+ * 2008-01-30 (mca)
+ * 
+ * sample command-line app that uses HTTPClient to execute against server
+ * uses the http://exyus.com/xcs/tasklist endpoint as a target.
+ * list, add, update, delete tasks via commandline 
+ * 
+ */ 
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,7 +21,7 @@ namespace tasklist_cmd
     {
         static void Main(string[] args)
         {
-            TaskList tl = new TaskList();
+            TaskList tl = new TaskList("http://exyus.com/xcs/tasklist/");
 
             Console.WriteLine("\nTaskList Utility\n2008-01-30 (mca)\n" + tl.Uri + "\n");
 
@@ -67,16 +77,26 @@ namespace tasklist_cmd
     public class TaskList
     {
         string p_etag = string.Empty;
-        string p_new_task = "<task><name>{0}</name><is-completed>{1}</is-completed></task>";
+        string p_ua = "tasklist-cmd/1.0";
         string p_done = "<is-completed>1</is-completed>";
         string p_pending = "<is-completed>0</is-completed>";
+        string p_new_task = "<task><name>{0}</name><is-completed>{1}</is-completed></task>";
         HTTPClient client = new HTTPClient();
 
         public string Uri = "http://exyus.com/xcs/tasklist/";
 
+        public TaskList() { }
+        public TaskList(string uri)
+        {
+            this.Uri = uri;
+
+            client.UserAgent = p_ua;
+            client.Credentials = new System.Net.NetworkCredential("exyus", "3xyu$");
+        }
+
         public XmlDocument GetList()
         {
-            client.RequestHeaders.Add("cache-control", "no-cache");
+            client.RequestHeaders.Set("cache-control", "no-cache");
             string results = client.Execute(Uri, "get", "text/xml");
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(results);
@@ -113,7 +133,7 @@ namespace tasklist_cmd
             else
                 results = results.Replace(p_done, p_pending);
 
-            client.RequestHeaders.Add("if-match", p_etag);
+            client.RequestHeaders.Set("if-match", p_etag);
             client.Execute(Uri + id, "put", "text/xml", results);
         }
 
