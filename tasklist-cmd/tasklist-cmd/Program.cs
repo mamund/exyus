@@ -1,11 +1,19 @@
 /*
  * tasklist-cmd
- * 2008-01-30 (mca)
+ * 2008-01-29 (mca)
  * 
  * sample command-line app that uses HTTPClient to execute against server
  * uses the http://exyus.com/xcs/tasklist endpoint as a target.
  * list, add, update, delete tasks via commandline 
  * 
+ * usage:
+ *    tasklist-cmd cmd [arg1] [arg2]
+ *    -list                 : returns list of tasks at the public site
+ *    -add "my task"        : creates new task in pending state
+ *    -add "my task" 1      : creates new task in completed state
+ *    -toggle x1234abcd     : toggles the state of the task (using id)
+ *    -delete x1234abcd     : deletes existing task (using id)
+ *    -clear                : removes all tasks from the list
  */ 
 
 using System;
