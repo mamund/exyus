@@ -23,6 +23,7 @@ namespace Exyus.Web
         public DateTime ResponseLastModified = System.DateTime.MaxValue;
         public NetworkCredential Credentials = new NetworkCredential();
         public long ResponseLength = 0;
+        public string UserAgent = string.Empty;
 
         public HTTPClient() { }
         public HTTPClient(NetworkCredential crendentials)
@@ -56,8 +57,8 @@ namespace Exyus.Web
             {
                 // build request object
                 req = (HttpWebRequest)WebRequest.Create(url);
-                req.UserAgent = Constants.msc_exyus_agent;
-                req.Method = method;
+                req.UserAgent = (this.UserAgent.Length!=0?this.UserAgent:Constants.msc_exyus_agent);
+                req.Method = method.ToUpper();
                 req.ContentType = contentType;
                 req.Accept = contentType;
                 req.ContentLength = body.Length;
@@ -75,6 +76,9 @@ namespace Exyus.Web
                         string value = this.RequestHeaders[i];
                         switch (key.ToLower())
                         {
+                            case "user-agent":
+                                req.UserAgent = value;
+                                break;
                             case "if-modified-since":
                                 req.IfModifiedSince = DateTime.Parse(value);
                                 break;
