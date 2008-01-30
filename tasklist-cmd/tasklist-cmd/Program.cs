@@ -89,9 +89,7 @@ namespace tasklist_cmd
         public TaskList(string uri)
         {
             this.Uri = uri;
-
             client.UserAgent = p_ua;
-            client.Credentials = new System.Net.NetworkCredential("exyus", "3xyu$");
         }
 
         public XmlDocument GetList()
