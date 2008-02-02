@@ -18,6 +18,7 @@ namespace Exyus
         public const string cType_Xml = "text/xml";
         public const string cType_Html = "text/html";
         public const string cType_FormUrlEncoded = "application/x-www-form-urlencoded";
+        public const string cType_Json = "application/json";
 
         // headers
         public const string hdr_last_modified = "Last-Modified";

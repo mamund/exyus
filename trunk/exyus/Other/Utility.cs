@@ -46,6 +46,18 @@ namespace Exyus
 
     public class Utility
     {
+        public XmlDocument ProcessJSON(Stream s)
+        {
+            string data = string.Empty;
+            using (StreamReader sr = new StreamReader(s))
+            {
+                data = sr.ReadToEnd();
+                sr.Close();
+            }
+            JSONtoXML jx = new JSONtoXML();
+            return jx.GetXml(data);
+        }
+
         public XmlDocument ProcessFormVars(NameValueCollection formVars)
         {
             XmlDocument doc = new XmlDocument();

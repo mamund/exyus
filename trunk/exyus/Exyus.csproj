@@ -33,6 +33,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\installs\mvp-xml\Mvp.Xml-2.3-Bin\Mvp.Xml.dll</HintPath>
     </Reference>
+    <Reference Include="Nii.JSON, Version=1.0.2953.41233, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Nii.JSON\JSONlib\bin\Debug\Nii.JSON.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
@@ -47,6 +51,7 @@
     <Compile Include="Other\Helper.cs" />
     <Compile Include="Mime\MediaTypesAttribute.cs" />
     <Compile Include="Mime\MimeParser.cs" />
+    <Compile Include="Other\JSONtoXML.cs" />
     <Compile Include="Resources\PlainTextViewer.cs" />
     <Compile Include="Security\Authentication.cs" />
     <Compile Include="Security\ExyusIdentity.cs" />
