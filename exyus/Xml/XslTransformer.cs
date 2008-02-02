@@ -19,6 +19,7 @@ namespace Exyus.Xml
         public XmlDocument ExecuteXml(XmlDocument xmldoc, string xslFileName)
         {
             XmlDocument rtndoc = new XmlDocument();
+            rtndoc.PreserveWhitespace = false;
             rtndoc.LoadXml(ExecuteText(xmldoc, xslFileName));
             return rtndoc;
         }
@@ -58,12 +59,18 @@ namespace Exyus.Xml
 
             using (TextWriter sw = new StringWriter())
             {
+                //xsldoc.Transform(
+                //    new XmlInput(xmldoc.CreateNavigator()),
+                //    util.GetXsltArgs(htargs),
+                //    new XmlOutput(sw)
+                //    );
+
                 xsldoc.Transform(
-                    new XmlInput(xmldoc.CreateNavigator()),
+                    new XmlInput(new XmlNodeReader(xmldoc)),
                     util.GetXsltArgs(htargs),
                     new XmlOutput(sw)
-                    );
-                
+                );
+
                 using (TextReader sr = new StringReader(sw.ToString()))
                 {
                     rtn = sr.ReadToEnd();
@@ -100,8 +107,13 @@ namespace Exyus.Xml
                     null);
             }
 
+            //xsldoc.Transform(
+            //    new XmlInput(xmldoc.CreateNavigator()),
+            //    util.GetXsltArgs(),
+            //    new XmlOutput(output)
+            //    );
             xsldoc.Transform(
-                new XmlInput(xmldoc.CreateNavigator()),
+                new XmlInput(new XmlNodeReader(xmldoc)),
                 util.GetXsltArgs(),
                 new XmlOutput(output)
                 );
