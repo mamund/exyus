@@ -5,3 +5,5 @@ C:\Projects\Exyus\google-svn\trunk\exyus\bin\Debug\Mvp.Xml.xml
 C:\Projects\Exyus\google-svn\trunk\exyus\obj\Debug\ResolveAssemblyReference.cache
 C:\Projects\Exyus\google-svn\trunk\exyus\obj\Debug\Exyus.dll
 C:\Projects\Exyus\google-svn\trunk\exyus\obj\Debug\Exyus.pdb
+C:\Projects\Exyus\google-svn\trunk\exyus\bin\Debug\Nii.JSON.dll
+C:\Projects\Exyus\google-svn\trunk\exyus\bin\Debug\Nii.JSON.pdb

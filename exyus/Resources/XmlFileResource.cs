@@ -322,7 +322,7 @@ namespace Exyus.Web
                     XslTransformer xslt = new XslTransformer();
                     id = xslt.ExecuteText(xmlargs, xsl_file, arg_list);
                 }
-                // transform *must* return doc id!
+                // transform *must not* return doc id!
                 if (id != string.Empty)
                     throw new HttpException(400, "Cannot POST using resource id");
 
@@ -331,10 +331,18 @@ namespace Exyus.Web
 
                 // get the xmldoc from the entity
                 this.Context.Request.InputStream.Position = 0;
-                if (mtype.ToLower() == Constants.cType_FormUrlEncoded)
-                    xmlin = util.ProcessFormVars(this.Context.Request.Form);
-                else
-                    xmlin.Load(this.Context.Request.InputStream);
+                switch (mtype.ToLower())
+                {
+                    case Constants.cType_FormUrlEncoded:
+                        xmlin = util.ProcessFormVars(this.Context.Request.Form);
+                        break;
+                    case Constants.cType_Json:
+                        xmlin = util.ProcessJSON(this.Context.Request.InputStream);
+                        break;
+                    default:
+                        xmlin.Load(this.Context.Request.InputStream);
+                        break;
+                }
 
                 // validate the doc
                 xsd_file = (File.Exists(XsdFileMtype) ? XsdFileMtype : XsdFile);
@@ -452,10 +460,18 @@ namespace Exyus.Web
                 // get the xmldoc from the entity body
                 xmlin = new XmlDocument();
                 this.Context.Request.InputStream.Position=0;
-                if (mtype.ToLower() == Constants.cType_FormUrlEncoded)
-                    xmlin = util.ProcessFormVars(this.Context.Request.Form);
-                else
-                    xmlin.Load(this.Context.Request.InputStream);
+                switch (mtype.ToLower())
+                {
+                    case Constants.cType_FormUrlEncoded:
+                        xmlin = util.ProcessFormVars(this.Context.Request.Form);
+                        break;
+                    case Constants.cType_Json:
+                        xmlin = util.ProcessJSON(this.Context.Request.InputStream);
+                        break;
+                    default:
+                        xmlin.Load(this.Context.Request.InputStream);
+                        break;
+                }
 
                 // validate the doc
                 if (File.Exists(XsdFile))
