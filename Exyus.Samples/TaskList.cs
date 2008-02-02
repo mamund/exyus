@@ -1,6 +1,7 @@
 /*
  * tasklist.cs
  * 2008-01-24 (mca)
+ * 2008-02-02 (mca) : added JSON support
  */
 using System;
 using Exyus.Web;
@@ -45,7 +46,8 @@ namespace Exyus.Samples
             this.UpdateMediaTypes = new string[] 
                 {
                     "application/x-www-form-urlencoded",
-                    "text/xml" 
+                    "text/xml",
+                    "application/json"
                 };
             
             // set cache invalidation rules
