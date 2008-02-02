@@ -8,3 +8,5 @@ C:\Projects\Exyus\google-svn\trunk\Exyus.Samples\bin\Debug\Exyus.pdb
 C:\Projects\Exyus\google-svn\trunk\Exyus.Samples\obj\Debug\ResolveAssemblyReference.cache
 C:\Projects\Exyus\google-svn\trunk\Exyus.Samples\obj\Debug\Exyus.Samples.dll
 C:\Projects\Exyus\google-svn\trunk\Exyus.Samples\obj\Debug\Exyus.Samples.pdb
+C:\Projects\Exyus\google-svn\trunk\Exyus.Samples\bin\Debug\Nii.JSON.dll
+C:\Projects\Exyus\google-svn\trunk\Exyus.Samples\bin\Debug\Nii.JSON.pdb
