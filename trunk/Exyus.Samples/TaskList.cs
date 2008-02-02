@@ -17,7 +17,7 @@ namespace Exyus.Samples
 {
     // set uri pattern matching and supported media types
     [UriPattern(@"/tasklist/(?<taskid>[^/?]*)?(?:\.xcs)(?:.*)?")]
-    [MediaTypes("text/html","text/xml")]
+    [MediaTypes("text/html","text/xml","application/json")]
     class TaskList : XmlFileResource
     {
         public TaskList()
