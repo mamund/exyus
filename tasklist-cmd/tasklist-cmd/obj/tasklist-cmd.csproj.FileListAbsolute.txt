@@ -8,3 +8,5 @@ C:\Projects\Exyus\google-svn\trunk\tasklist-cmd\tasklist-cmd\bin\Debug\Mvp.Xml.x
 C:\Projects\Exyus\google-svn\trunk\tasklist-cmd\tasklist-cmd\obj\Debug\ResolveAssemblyReference.cache
 C:\Projects\Exyus\google-svn\trunk\tasklist-cmd\tasklist-cmd\obj\Debug\tasklist-cmd.exe
 C:\Projects\Exyus\google-svn\trunk\tasklist-cmd\tasklist-cmd\obj\Debug\tasklist-cmd.pdb
+C:\Projects\Exyus\google-svn\trunk\tasklist-cmd\tasklist-cmd\bin\Debug\Nii.JSON.dll
+C:\Projects\Exyus\google-svn\trunk\tasklist-cmd\tasklist-cmd\bin\Debug\Nii.JSON.pdb
