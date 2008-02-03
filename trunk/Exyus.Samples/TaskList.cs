@@ -1,7 +1,8 @@
 /*
  * tasklist.cs
  * 2008-01-24 (mca)
- * 2008-02-02 (mca) : added JSON support
+ * 2008-02-02 (mca) : added application/json
+ * 2008-02-03 (mca) : added application/atom+xml
  */
 using System;
 using Exyus.Web;
@@ -18,7 +19,7 @@ namespace Exyus.Samples
 {
     // set uri pattern matching and supported media types
     [UriPattern(@"/tasklist/(?<taskid>[^/?]*)?(?:\.xcs)(?:.*)?")]
-    [MediaTypes("text/html","text/xml","application/json")]
+    [MediaTypes("text/html","text/xml","application/json","application/atom+xml")]
     class TaskList : XmlFileResource
     {
         public TaskList()
@@ -45,9 +46,10 @@ namespace Exyus.Samples
             // set supported post/put types
             this.UpdateMediaTypes = new string[] 
                 {
-                    "application/x-www-form-urlencoded",
                     "text/xml",
-                    "application/json"
+                    "application/json",
+                    "application/atom+xml",
+                    "application/x-www-form-urlencoded"
                 };
             
             // set cache invalidation rules
