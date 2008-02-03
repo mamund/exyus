@@ -1,6 +1,7 @@
 /*
  * tasklist-cmd
  * 2008-01-29 (mca)
+ * 2008-02-01 (mca) : cleaned up UI, added arg display
  * 
  * sample command-line app that uses HTTPClient to execute against server
  * uses the http://exyus.com/xcs/tasklist endpoint as a target.
@@ -31,13 +32,17 @@ namespace tasklist_cmd
         {
             TaskList tl = new TaskList("http://exyus.com/xcs/tasklist/");
 
-            Console.WriteLine("\nTaskList Utility\n2008-01-30 (mca)\n" + tl.Uri + "\n");
+            Console.WriteLine("\nTaskList Utility\n2008-02-02 (mca)\n" + tl.Uri + "\n");
 
             if (args.Length == 0)
             {
                 ShowHelp();
                 return;
             }
+
+            Console.WriteLine("Request:");
+            ShowCommand(args);
+            Console.WriteLine("Response:");
 
             try
             {
@@ -74,6 +79,15 @@ namespace tasklist_cmd
             }
 
             return;
+        }
+
+        static void ShowCommand(string[] args)
+        {
+            for (int i = 0; i < args.Length; i++)
+            {
+                Console.Write(args[i] + " ");
+            }
+            Console.WriteLine("\n");
         }
 
         static void ShowHelp()
