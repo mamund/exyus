@@ -241,7 +241,7 @@ namespace Exyus.Web
                 // if we have form url and that's not the current url
                 if (url != string.Empty && refer.ToLower().IndexOf(url.ToLower())==-1)
                     app.Response.Redirect(url+"#"+app.Server.UrlEncode(app.Request.RawUrl), true);
-                else 
+                else
                     auth.ProduceAuthHeader();
             }
         }

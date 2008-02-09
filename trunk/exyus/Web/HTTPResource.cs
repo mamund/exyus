@@ -244,8 +244,8 @@ namespace Exyus.Web
 
             // settle cookie/auth issue
             if (
-                (this.Context.Response.Cookies != null && this.Context.Request.Cookies.Count!=0)
-                || 
+                //(this.Context.Response.Cookies != null && this.Context.Request.Cookies.Count!=0)
+                //|| 
                 this.Context.Request.IsAuthenticated
                 )
             {
