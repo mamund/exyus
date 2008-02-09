@@ -46,6 +46,10 @@ namespace Exyus
 
     public class Utility
     {
+        public string[] GetUriPatterns(HTTPResource hr)
+        {
+            return ((UriPattern)hr.GetType().GetCustomAttributes(typeof(UriPattern), false)[0]).Patterns;
+        }
         public XmlDocument ProcessJSON(Stream s)
         {
             string data = string.Empty;
