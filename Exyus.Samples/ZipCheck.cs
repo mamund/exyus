@@ -1,3 +1,8 @@
+/*
+ * 2008-02-09 (mca)
+ * ZipCheck app to report OK/NotFound for US ZIP codes via URL
+ */
+ 
 using System;
 using System.Collections;
 
@@ -9,6 +14,8 @@ using Exyus.Web;
 
 namespace Exyus.Samples
 {
+    // report OK/NotFound for various US ZIP code values
+    // defaults to use image/png response, but supports others
     [UriPattern(@"/zipcheck/(?<zipid>[^/?]*)?(?:\.xcs)")]
     [MediaTypes("image/png","text/plain","text/html","text/xml","application/json")]
     class ZipCheck : HTTPResource
@@ -101,4 +108,32 @@ namespace Exyus.Samples
             return list;
         }
     }
+
+    // send html document to the client
+    [UriPattern(@"/zipcheck/client(?:\.xcs)")]
+    [MediaTypes("text/html")]
+    public class ZipPage : StaticResource
+    {
+        public ZipPage()
+        {
+            this.Content = Helper.ReadFile("/xcs/content/zipcheck/zip-page.html");
+        }
+    }
+
+    // echo source code files to browser in plain text
+    [UriPattern(@"/zipcheck/source/(?:\.xcs)(?:.*)?")]
+    [MediaTypes("text/plain")]
+    class ZipCheckSource : PlainTextViewer
+    {
+        public ZipCheckSource()
+        {
+            this.MaxAge = 600;
+            this.UseValidationCaching = true;
+
+            this.Files.Add("zipcheck.cs", "/xcs/content/zipcheck/zipcheck.cs");
+            this.Files.Add("zip-page.html", "/xcs/content/zipcheck/zip-page.html");
+            this.Files.Add("zip-codes.txt", "/xcs/files/zipcheck/zip-codes.txt");
+        }
+    }
+
 }
