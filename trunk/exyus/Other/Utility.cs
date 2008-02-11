@@ -46,6 +46,16 @@ namespace Exyus
 
     public class Utility
     {
+        public string XmlEncodeData(string data)
+        {
+
+            XmlDocument doc = new XmlDocument();
+            XmlElement elm = doc.CreateElement("temp");
+            elm.AppendChild(doc.CreateTextNode(data));
+            string rtn = elm.InnerXml;
+            return rtn;
+        }
+
         public string[] GetUriPatterns(HTTPResource hr)
         {
             return ((UriPattern)hr.GetType().GetCustomAttributes(typeof(UriPattern), false)[0]).Patterns;
