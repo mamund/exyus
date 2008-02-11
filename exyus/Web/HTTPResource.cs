@@ -158,6 +158,9 @@ namespace Exyus.Web
 
             SetExyusHeader();
 
+            // add content-type to log file
+            ctx.Response.AppendToLog(string.Format(" [exyus-mtype={0}]", this.ContentType));
+
             // handle caching headers
             if (method == Constants.HttpGet || method == Constants.HttpHead)
                 SetCachingHeaders();
