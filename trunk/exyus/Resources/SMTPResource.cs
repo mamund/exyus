@@ -98,7 +98,7 @@ namespace Exyus.Web
                 // transform *must not* return doc id!
                 if (id != string.Empty)
                     throw new HttpException(400, "Cannot POST using resource id");
-
+                
                 // get the xmldoc from the entity
                 this.Context.Request.InputStream.Position = 0;
                 switch (mtype.ToLower())
@@ -139,15 +139,72 @@ namespace Exyus.Web
                     xmlout = xmlin;
 
                 // now build up the email and send it
-                string from = xmlout.SelectSingleNode("//from").InnerText;
-                string to = xmlout.SelectSingleNode("//to").InnerText;
-                string subject = xmlout.SelectSingleNode("//subject").InnerText;
-                string body = xmlout.SelectSingleNode("//body").InnerXml;
+                MailAddress maFrom = null;
+                maFrom = GetMailAddress(xmlout.SelectSingleNode("//from/address"));
+                MailAddress maReplyTo = null;
+                maReplyTo = GetMailAddress(xmlout.SelectSingleNode("//replyto/address"));
+
+                XmlNodeList xmlTo = xmlout.SelectNodes("//to/address");
+                MailAddressCollection maTo = new MailAddressCollection();
+                for (int i = 0; i < xmlTo.Count; i++)
+                {
+                    MailAddress ma = GetMailAddress(xmlTo[i]);
+                    if (ma != null)
+                    {
+                        maTo.Add(ma);
+                    }
+                }
+
+                XmlNodeList xmlCC = xmlout.SelectNodes("//cc/address");
+                MailAddressCollection maCC = new MailAddressCollection();
+                for (int i = 0; i < xmlCC.Count; i++)
+                {
+                    MailAddress ma = GetMailAddress(xmlCC[i]);
+                    if (ma != null)
+                    {
+                        maCC.Add(ma);
+                    }
+                }
+
+                XmlNodeList xmlBCC = xmlout.SelectNodes("//bcc/address");
+                MailAddressCollection maBCC = new MailAddressCollection();
+                for (int i = 0; i < xmlBCC.Count; i++)
+                {
+                    MailAddress ma = GetMailAddress(xmlBCC[i]);
+                    if (ma != null)
+                    {
+                        maBCC.Add(ma);
+                    }
+                }
+                string subject = xmlout.SelectSingleNode("//subject").InnerText.Trim();
+                string body = xmlout.SelectSingleNode("//body").InnerXml.Trim();
+
+                MailMessage mm = new MailMessage();
+                mm.Body = body;
+                mm.From = maFrom;
+                mm.Subject = subject;
+                if (maReplyTo != null)
+                {
+                    mm.ReplyTo = maReplyTo;
+                }
+                for (int i = 0; i < maBCC.Count; i++)
+                {
+                    mm.Bcc.Add(maBCC[i]);
+                }
+                for(int i=0;i<maCC.Count;i++)
+                {
+                    mm.CC.Add(maCC[i]);
+                }
+                if (maTo.Count > 0)
+                for (int i = 0; i < maTo.Count; i++)
+                {
+                    mm.To.Add(maTo[i]);
+                }
 
                 SmtpClient smtp = new SmtpClient();
                 if (this.SMTPHost != string.Empty)
                     smtp.Host = this.SMTPHost;
-                smtp.Send(from, to, subject, body);
+                smtp.Send(mm);
 
                 // redirect to created item
                 this.StatusCode = (this.RedirectOnPost?HttpStatusCode.Redirect:HttpStatusCode.Created);
@@ -179,6 +236,37 @@ namespace Exyus.Web
 
             xmlin = null;
             xmlout = null;
+        }
+
+        private MailAddress GetMailAddress(XmlNode node)
+        {
+            XmlNode xmlEmail = null;
+            XmlNode xmlName = null;
+            string email = string.Empty;
+            string name = string.Empty;
+            MailAddress ma = null;
+
+            if (node != null)
+            {
+                xmlEmail = node.SelectSingleNode("email");
+                if (xmlEmail != null)
+                {
+                    email = xmlEmail.InnerText.Trim();
+                }
+                xmlName = node.SelectSingleNode("name");
+                if (xmlName != null)
+                {
+                    name = xmlName.InnerText.Trim();
+                }
+                else
+                {
+                    name = email;
+                }
+
+                ma = new MailAddress(email,name);
+            }
+
+            return ma;
         }
     }
 }
