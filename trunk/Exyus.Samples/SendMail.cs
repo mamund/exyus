@@ -4,7 +4,7 @@ using Exyus.Web;
 namespace Exyus.Samples
 {
     [UriPattern(@"/sendmail/\.xcs")]
-    [MediaTypes("application/x-www-form-urlencoded", "text/xml")]
+    [MediaTypes("application/x-www-form-urlencoded", "text/xml","application/json")]
     class SendMail : SMTPResource
     {
         public SendMail()
