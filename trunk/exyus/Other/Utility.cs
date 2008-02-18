@@ -72,6 +72,25 @@ namespace Exyus
             return jx.GetXml(data);
         }
 
+        public XmlDocument ProcessFormVars(string formdata)
+        {
+            string[] pair = null;
+            string[] items = formdata.Split('&');
+
+            XmlDocument doc = new XmlDocument();
+            XmlNode root = doc.CreateElement("form");
+            
+            for (int i = 0; i < items.Length; i++)
+            {
+                pair = items[i].Split('=');
+                XmlNode node = doc.CreateElement(pair[0]);
+                node.AppendChild(doc.CreateTextNode(this.ctx.Server.UrlDecode(pair[1])));
+                root.AppendChild(node);
+            }
+            doc.AppendChild(root);
+            return doc;
+        }
+
         public XmlDocument ProcessFormVars(NameValueCollection formVars)
         {
             XmlDocument doc = new XmlDocument();
