@@ -26,9 +26,9 @@ namespace Exyus.Web
         public string UserAgent = string.Empty;
 
         public HTTPClient() { }
-        public HTTPClient(NetworkCredential crendentials)
+        public HTTPClient(NetworkCredential credentials)
         {
-            this.Credentials = crendentials;
+            this.Credentials = credentials;
         }
         public HTTPClient(string user, string password)
         {
@@ -180,12 +180,17 @@ namespace Exyus.Web
         public CookieContainer CookieCollection = new CookieContainer();
         public string defaultType;
         public Hashtable UriTypeMap;
+        public bool NoCache = true;
 
         public void Execute()
         {
             Utility util = new Utility();
             HTTPClient cl = new HTTPClient();
-            cl.RequestHeaders.Set(Constants.hdr_cache_control, "no-cache");
+
+            if (this.NoCache == true)
+            {
+                cl.RequestHeaders.Set(Constants.hdr_cache_control, "no-cache");
+            }
             cl.Credentials = util.GetSystemCredentials();
             cl.CookieCollection = this.CookieCollection;
 
