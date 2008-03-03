@@ -27,7 +27,7 @@ namespace Exyus.Xml
             }
         }
 
-        public object GetEntityWithHeaders(Uri absoluteUri, string role, Type ofObjectToReturn, string accept, string language)
+        public override object GetEntity(Uri absoluteUri, string role, Type ofObjectToReturn)
         {
             WebResponse wRes;
             return GetResource(absoluteUri.AbsoluteUri, this.Accept, this.AcceptLangugage, out wRes);

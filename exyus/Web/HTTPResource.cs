@@ -258,7 +258,14 @@ namespace Exyus.Web
             }
             else
             {
-                cache_control = "public,must-revalidate";
+                if (this.MaxAge == 0 && this.UseValidationCaching == false)
+                {
+                    cache_control = "no-cache";
+                }
+                else
+                {
+                    cache_control = "public,must-revalidate";
+                }
             }
 
             // check for expiration caching
