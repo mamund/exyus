@@ -16,7 +16,7 @@ namespace Exyus.Samples
 {
     // report OK/NotFound for various US ZIP code values
     // defaults to use image/png response, but supports others
-    [UriPattern(@"/zipcheck/(?<zipid>[^/?]*)?(?:\.xcs)")]
+    [UriPattern(@"/zipcheck/(?<zipid>.*)?\.xcs")]
     [MediaTypes("image/png","text/plain","text/html","text/xml","application/json")]
     class ZipCheck : HTTPResource
     {
