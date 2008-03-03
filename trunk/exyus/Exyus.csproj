@@ -52,6 +52,7 @@
     <Compile Include="Mime\MediaTypesAttribute.cs" />
     <Compile Include="Mime\MimeParser.cs" />
     <Compile Include="Other\JSONtoXML.cs" />
+    <Compile Include="Resources\XmlSqlResource.cs" />
     <Compile Include="Resources\SMTPResource.cs" />
     <Compile Include="Resources\PlainTextViewer.cs" />
     <Compile Include="Security\Authentication.cs" />
@@ -70,7 +71,6 @@
     <Compile Include="Web\HTTPResource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Web\HTTPClient.cs" />
-    <Compile Include="Xml\ExyusResolver.cs" />
     <Compile Include="Xml\SchemaValidator.cs" />
     <Compile Include="Web\ExyusModule.cs" />
     <Compile Include="Other\Utility.cs" />

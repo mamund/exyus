@@ -162,7 +162,7 @@ namespace Exyus.Web
             string XslGetArgs = this.Context.Server.MapPath(this.DocumentsFolder + "get_args.xsl");
             
             string xslGetRequest = this.Context.Server.MapPath(this.DocumentsFolder + "get_request.xsl");
-            string xslGetRequestContentType = this.Context.Server.MapPath(this.DocumentsFolder + (mtype == string.Empty ? "get_response.xsl" : string.Format("get_request_{0}.xsl", ftype)));
+            string xslGetRequestContentType = this.Context.Server.MapPath(this.DocumentsFolder + (mtype == string.Empty ? "get_request.xsl" : string.Format("get_request_{0}.xsl", ftype)));
 
             string xslGetResponse = this.Context.Server.MapPath(this.DocumentsFolder + "get_response.xsl");
             string xslGetResponseContentType = this.Context.Server.MapPath(this.DocumentsFolder + (mtype == string.Empty ? "get_response.xsl" : string.Format("get_response_{0}.xsl", ftype)));
