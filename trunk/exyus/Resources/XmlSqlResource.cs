@@ -6,9 +6,11 @@ using System.IO;
 using Microsoft.Data.SqlXml;
 using System.Text.RegularExpressions;
 using System.Collections;
+using System.Collections.Specialized;
 
 using Exyus.Xml;
 using Exyus.Caching;
+using Exyus.Security;
 
 namespace Exyus.Web
 {
@@ -27,7 +29,7 @@ namespace Exyus.Web
         public string Title = string.Empty;
         public bool RedirectOnPost = false;
         public bool RedirectOnPut = false;
-        public string PostIdXPath = "/@id";
+        public string PostIdXPath = "//@id";
 
         // internal vars
         private string[] mediaTypes = null;
@@ -253,7 +255,7 @@ namespace Exyus.Web
                 if (File.Exists(xsl_file))
                 {
                     xslt = new XslTransformer();
-                    string cmdtext = xslt.ExecuteText(xmlin, xsl_file);
+                    string cmdtext = xslt.ExecuteText(xmlin, xsl_file,arg_list);
 
                     // execute sql and return results
                     SqlXmlCommand cmd = new SqlXmlCommand(util.GetConfigSectionItem(Constants.cfg_exyusSettings, this.ConnectionString));
@@ -333,7 +335,7 @@ namespace Exyus.Web
 
             // determine mediatype for this request
             // and adjust for response, if need
-            string mtype = util.SetMediaType(this);
+            string mtype = util.SetMediaType(this,this.UpdateMediaTypes);
             string ftype = util.LookUpFileType(mtype);
 
             // possible control documents
@@ -416,6 +418,9 @@ namespace Exyus.Web
                         rdr.Close();
                     }
 
+                    // udpate arg list with new id
+                    util.SafeAdd(ref arg_list,"id",xmlout.SelectSingleNode(this.PostIdXPath).InnerText);
+
                     // transform outputs into representation
                     xsl_file = string.Empty;
                     xsl_file = (xslGetResponseContentType != string.Empty ? xslGetResponseContentType : xslGetResponse);
@@ -431,11 +436,6 @@ namespace Exyus.Web
 
                     // check for redirect to created item
                     this.StatusCode = (this.RedirectOnPost ? HttpStatusCode.Redirect : HttpStatusCode.Created);
-                    if (arg_list.ContainsKey("id"))
-                        arg_list["id"] = xmlout.SelectSingleNode(this.PostIdXPath).InnerText;
-                    else
-                        arg_list.Add("id", xmlout.SelectSingleNode(this.PostIdXPath).InnerText);
-
                     this.Location = util.ReplaceArgs(util.GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_rootfolder) + this.PostLocationUri, arg_list);
 
                     // if we were using form-posting, reset to preferred content type (text/html, most likely)
@@ -484,25 +484,86 @@ namespace Exyus.Web
         {
             XmlDocument xmlout = new XmlDocument();
             XmlDocument xmlin = new XmlDocument();
+            XmlDocument xmlargs = new XmlDocument();
+            XslTransformer xslt = new XslTransformer();
+            Hashtable arg_list = new Hashtable();
+            string out_text = string.Empty;
+            string xsl_file = string.Empty;
+            string xsd_file = string.Empty;
+            string original_contentType = this.ContentType;
 
-            string XslFile = this.Context.Server.MapPath(this.DocumentsFolder + "put.xsl");
+            absoluteUri = this.Context.Request.RawUrl;
+
+            // settle on media type for the method
+            string mtype = util.SetMediaType(this, this.UpdateMediaTypes);
+            string ftype = util.LookUpFileType(mtype);
+
+            // possible control documents
+            string XslArgs = this.Context.Server.MapPath(this.DocumentsFolder + "args.xsl");
+            string XslPutArgs = this.Context.Server.MapPath(this.DocumentsFolder + "put_args.xsl");
+
+            string XsdArgs = this.Context.Server.MapPath(this.DocumentsFolder + "args.xsd");
+            string XsdPutArgs = this.Context.Server.MapPath(this.DocumentsFolder + "put_args.xsd");
+
+            string xslPutRequest = this.Context.Server.MapPath(this.DocumentsFolder + "put_request.xsl");
+            string xslPutRequestContentType = this.Context.Server.MapPath(this.DocumentsFolder + (mtype == string.Empty ? "put_request.xsl" : string.Format("put_request_{0}.xsl", ftype)));
+
+            string xslPutResponse = this.Context.Server.MapPath(this.DocumentsFolder + "put_response.xsl");
+            string xslPutResponseContentType = this.Context.Server.MapPath(this.DocumentsFolder + (mtype == string.Empty ? "put_response.xsl" : string.Format("put_response_{0}.xsl", ftype)));
+
             string XsdFile = this.Context.Server.MapPath(this.DocumentsFolder + "put.xsd");
-
+            string XsdFileMtype = this.Context.Server.MapPath(this.DocumentsFolder + (mtype == string.Empty ? "put.xsd" : string.Format("put_{0}.xsd", ftype)));
             try
             {
-                // validate the uri
-                string id = Regex.Match(this.Context.Request.RawUrl, this.UrlPattern).Groups[1].Value;
-                if (id == string.Empty)
-                    throw new HttpException(400, "missing id");
+                // use regexp pattern to covert url into xml document
+                arg_list = util.ParseUrlPattern(absoluteUri, this.UrlPattern);
+                util.SafeAdd(ref arg_list, "_title", this.Title);
+                util.SafeAdd(ref arg_list, "_last-modified", string.Format("{0:s}Z", DateTime.UtcNow));
 
-                // get the xmldoc from the entity
-                xmlin.Load(this.Context.Request.InputStream);
+                // transform into proper argument list
+                xmlargs.LoadXml("<root />");
+                xsl_file = string.Empty;
+                xsl_file = (File.Exists(XslPutArgs) ? XslPutArgs : XslArgs);
+                if (File.Exists(xsl_file))
+                {
+                    xslt = new XslTransformer();
+                    out_text = xslt.ExecuteText(xmlargs, xsl_file, arg_list);
+                    xmlargs.LoadXml(out_text);
+                }
 
-                // validate the doc
-                if (File.Exists(XsdFile))
+                // validate the args
+                xsd_file = string.Empty;
+                xsd_file = (File.Exists(XsdPutArgs) ? XsdPutArgs : XsdArgs);
+                if (File.Exists(xsd_file))
                 {
                     SchemaValidator sv = new SchemaValidator();
-                    string sch_error = sv.Execute(xmlin, XsdFile);
+                    string sch_error = sv.Execute(xmlargs, xsd_file);
+                    if (sch_error != string.Empty)
+                        throw new HttpException(400, sch_error);
+                }
+
+                // get the xmldoc from the entity
+                this.Context.Request.InputStream.Position = 0;
+                switch (mtype.ToLower())
+                {
+                    case Constants.cType_FormUrlEncoded:
+                        xmlin = util.ProcessFormVars(this.Context.Request.Form);
+                        break;
+                    case Constants.cType_Json:
+                        xmlin = util.ProcessJSON(this.Context.Request.InputStream);
+                        break;
+                    default:
+                        xmlin.Load(this.Context.Request.InputStream);
+                        break;
+                }
+
+                // validate the doc
+                xsd_file = string.Empty;
+                xsd_file = (XsdFileMtype != string.Empty ? XsdFileMtype : XsdFile);
+                if (File.Exists(xsd_file))
+                {
+                    SchemaValidator sv = new SchemaValidator();
+                    string sch_error = sv.Execute(xmlin, xsd_file);
                     if (sch_error != string.Empty)
                         throw new HttpException(422, sch_error);
                 }
@@ -510,32 +571,117 @@ namespace Exyus.Web
                 // validate html nodes
                 util.ValidateXHtmlNodes(ref xmlin, this.XHtmlNodes);
 
-                // transform xmldoc into sql command
-                if (File.Exists(XslFile))
+                // prepare for update/create
+                bool save_item = false;
+                string etag = string.Empty;
+                string last_mod = string.Empty;
+                string put_error = "Unable to complete PUT.";   // generic message
+
+                // next, do a head request for this resource
+                HTTPClient cl = new HTTPClient();
+                ExyusPrincipal ep = (ExyusPrincipal)this.Context.User;
+                cl.Credentials = new NetworkCredential(((ExyusIdentity)ep.Identity).Name, ((ExyusIdentity)ep.Identity).Password);
+
+                // load headers for request
+                PutHeaders ph = new PutHeaders(this.Context);
+                if (ph.IfMatch != string.Empty)
+                    cl.RequestHeaders.Set(Constants.hdr_if_none_match, ph.IfMatch);
+                if (ph.IfUnmodifiedSince != string.Empty)
+                    cl.RequestHeaders.Set(Constants.hdr_if_modified_since, ph.IfUnmodifiedSince);
+                if (ph.IfUnmodifiedSince == string.Empty && ph.LastModified != string.Empty)
+                    cl.RequestHeaders.Set(Constants.hdr_if_modified_since, ph.LastModified);
+                // make request for existing resource
+                try
                 {
-                    XslTransformer xslt = new XslTransformer();
-                    string cmdtext = xslt.ExecuteText(xmlin, XslFile);
+                    out_text = cl.Execute(
+                        string.Format("{0}://{1}{2}",
+                            this.Context.Request.Url.Scheme,
+                            this.Context.Request.Url.DnsSafeHost,
+                            this.Context.Request.RawUrl),
+                        "head", mtype);
 
-                    // execute sql and return results
-                    SqlXmlCommand cmd = new SqlXmlCommand(util.GetConfigSectionItem(Constants.cfg_exyusSettings, this.ConnectionString));
-                    cmd.CommandText = string.Format(cmdtext, id);
+                    // record exists, this must be an update
+                    etag = util.GetHttpHeader(Constants.hdr_etag, (NameValueCollection)cl.ResponseHeaders);
+                    last_mod = util.GetHttpHeader(Constants.hdr_last_modified, (NameValueCollection)cl.ResponseHeaders);
 
-                    using (XmlReader rdr = cmd.ExecuteXmlReader())
+                    // sort out update conditions
+                    util.CheckPutUpdateCondition(ph, etag, last_mod, ref put_error, ref save_item);
+                }
+                catch (HttpException hex2)
+                {
+                    // record not there or some other error
+                    int code = hex2.GetHttpCode();
+
+                    switch (code)
                     {
-                        xmlout.Load(rdr);
-                        rdr.Close();
+                        // record exists w/o changes, we can update!
+                        case (int)HttpStatusCode.NotModified:
+                            save_item = true;
+                            break;
+                        // see if it's ok to save
+                        case (int)HttpStatusCode.NotFound:
+                            // sort out create conditions
+                            util.CheckPutCreateCondition(ph, this.AllowCreateOnPut, etag, ref put_error, ref save_item);
+                            break;
+                        // some other error, omgz!
+                        default:
+                            put_error = hex2.Message + " Unable to create.";
+                            save_item = false;
+                            break;
                     }
+                }
 
-                    // cache invalidation
-                    ch.ClearCache(this.ImmediateCacheUri, this.BackgroundCacheUri, id, util.LoadUriCache());
+                if (save_item == true)
+                {
+                    // transform xmldoc into sql command
+                    xsl_file = string.Empty;
+                    xsl_file = (File.Exists(xslPutRequestContentType) ? xslPutRequestContentType : xslPutRequest);
+                    if (File.Exists(xsl_file))
+                    {
+                        xslt = new XslTransformer();
+                        string cmdtext = xslt.ExecuteText(xmlin, xsl_file, arg_list);
+
+                        // execute sql and return results
+                        SqlXmlCommand cmd = new SqlXmlCommand(util.GetConfigSectionItem(Constants.cfg_exyusSettings, this.ConnectionString));
+                        cmd.CommandText = cmdtext;
+
+                        using (XmlReader rdr = cmd.ExecuteXmlReader())
+                        {
+                            xmlout.Load(rdr);
+                            rdr.Close();
+                        }
+
+                        // transform outputs into representation
+                        xsl_file = string.Empty;
+                        xsl_file = (xslPutResponseContentType != string.Empty ? xslPutResponseContentType : xslPutResponse);
+                        if (File.Exists(xsl_file))
+                        {
+                            xslt = new XslTransformer();
+                            out_text = xslt.ExecuteText(xmlout, xsl_file, arg_list);
+                        }
+                        else
+                        {
+                            out_text = util.FixEncoding(xmlout.OuterXml);
+                        }
+
+                        // cache invalidation
+                        ch.ClearCache(this.ImmediateCacheUriTemplates, this.BackgroundCacheUriTemplates, "", arg_list, util.LoadUriCache());
+                    }
+                    else
+                    {
+                        throw new HttpException(500, "missing transform");
+                    }
                 }
                 else
-                    throw new HttpException(500, "missing transform");
+                {
+                    throw new HttpException((int)HttpStatusCode.PreconditionFailed, put_error);
+                }
             }
             catch (HttpException hex)
             {
                 this.StatusCode = (HttpStatusCode)hex.GetHttpCode();
                 xmlout.LoadXml(string.Format(Constants.fmt_xml_error, hex.Message));
+                out_text = util.FixEncoding(xmlout.OuterXml);
             }
             catch (SqlXmlException sqex)
             {
@@ -544,14 +690,17 @@ namespace Exyus.Web
                 else
                     this.StatusCode = (System.Net.HttpStatusCode)424;
                 xmlout.LoadXml(string.Format(Constants.fmt_xml_error_db, Regex.Match(sqex.Message, rex_sqex).Groups[1].Value));
+                out_text = util.FixEncoding(xmlout.OuterXml);
             }
             catch (Exception ex)
             {
                 this.StatusCode = HttpStatusCode.InternalServerError;
                 xmlout.LoadXml(string.Format(Constants.fmt_xml_error, ex.Message));
+                out_text = util.FixEncoding(xmlout.OuterXml);
             }
-            this.Response = xmlout;
+            this.Response = out_text;
 
+            xmlargs = null;
             xmlin = null;
             xmlout = null;
         }
