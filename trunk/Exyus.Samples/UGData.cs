@@ -4,12 +4,12 @@ using Exyus.Web;
 namespace Exyus.Samples
 {
     [UriPattern(@"/ugdata/(?<id>.*)\.xcs")]
-    [MediaTypes("text/xml")]
+    [MediaTypes("text/html","text/xml")]
     class UGData : XmlSqlResource
     {
         public UGData()
         {
-            this.ContentType = "text/xml";
+            this.ContentType = "text/html";
             this.ConnectionString = "exyus_samples";
             this.LocalMaxAge = 600;
 
@@ -18,6 +18,12 @@ namespace Exyus.Samples
             this.DocumentsFolder = "~/documents/ugdata/";
             this.RedirectOnPost = true;
             this.PostLocationUri = "/ugdata/{id}";
+            this.UpdateMediaTypes = new string[]
+                {
+                    "text/html",
+                    "application/x-www-form-urlencoded",
+                    "text/xml"
+                };
 
             // set cache invalidation rules
             this.ImmediateCacheUriTemplates = new string[]
