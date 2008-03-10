@@ -18,6 +18,7 @@ namespace Exyus.Samples.StaticExamples
 <body>
 <h1>samples</h1>
 <ul>
+<li><a href='./helloworld'>./helloworld</a></li>
 <li><a href='./virtual/?name=exyus'>./virtual/?name=exyus</a></li>
 <li><a href='./virtual/hello?name=guest'>./virtual/hello?name=guest</a></li>
 <li><a href='./time/'>./time/</a></li>
@@ -127,6 +128,17 @@ namespace Exyus.Samples.StaticExamples
         {
             this.ContentType = "image/svg+xml";
             this.Content = Helper.ReadFile("/xcs/content/samples/hello.svg");
+        }
+    }
+
+    // the exyus (C#) version of "/helloworld"
+    [UriPattern(@"/samples/helloworld\.xcs")]
+    [MediaTypes("text/plain")]
+    public class HelloWorldResource : StaticResource
+    {
+        public HelloWorldResource()
+        {
+            this.Content = "Hello World! Here is $_absolute-path$";
         }
     }
 }
