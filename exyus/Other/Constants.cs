@@ -47,6 +47,9 @@ namespace Exyus
         public const string fmt_xml_error_inc = "<error>{0}-{1}-{2}</error>";
         public const string fmt_exyus = "{0} {1}";
         public const string fmt_error_module = "<html><head><title>{0} Error</title></head><body><h1>{0} Error</h1><p>{1}</p></body></html>\n\n";
+        public const string fmt_error_json = "{\"error\":{\"title\":\"{0}\",\"message\":\"{1}\"}}";
+        public const string fmt_error_plain = "error:{0}\nmessage:{1}";
+        public const string fmt_error_html = "<h2>{0}</h2><p>{1}</p>";
 
         // inline xsl processing 
         public const string xsl_pi = "/processing-instruction('xml-stylesheet')";

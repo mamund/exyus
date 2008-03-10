@@ -17,6 +17,7 @@ using System.Xml.Xsl;
 
 using Exyus.Web;
 using Exyus.Xml;
+using Exyus.Security;
 using System.Collections.ObjectModel;
 
 using System.Xml;
@@ -46,6 +47,133 @@ namespace Exyus
 
     public class Utility
     {
+        public NetworkCredential GetCurrentCredentials(HTTPResource r)
+        {
+            NetworkCredential nc = null;
+            try
+            {
+                ExyusPrincipal ep = (ExyusPrincipal)r.Context.User;
+                nc = new NetworkCredential(((ExyusIdentity)ep.Identity).Name, ((ExyusIdentity)ep.Identity).Password);
+            }
+            catch (Exception ex)
+            {
+                nc = null;
+            }
+
+            return nc;
+        }
+
+        public string[] GetMediaTypes(HTTPResource r)
+        {
+            string[] rtn = null;
+            try
+            {
+                rtn = ((MediaTypes)r.GetType().GetCustomAttributes(typeof(MediaTypes), false)[0]).Types;
+            }
+            catch (Exception ex)
+            {
+                rtn = null;
+            }
+            return rtn;
+        }
+        public string GetDefaultUriPattern(HTTPResource r)
+        {
+            string rtn = string.Empty;
+            try
+            {
+                rtn = ((UriPattern)r.GetType().GetCustomAttributes(typeof(UriPattern), false)[0]).Patterns[0];
+            }
+            catch (Exception ex)
+            {
+                rtn = string.Empty;
+            }
+
+            return rtn;
+        }
+
+        public string LookUpErrorFormat(string contenttype)
+        {
+            SortedList filetypes;
+            string rtn = string.Empty;
+            XmlNodeList mediaNodes = null;
+            XmlDocument xmldoc = new XmlDocument();
+            string fullpath = string.Empty;
+            HttpContext ctx = HttpContext.Current;
+
+            fullpath = ctx.Server.MapPath(GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_mediaTypes));
+
+            filetypes = (SortedList)ctx.Cache.Get(fullpath+"_error-formats");
+            if (filetypes == null)
+            {
+                filetypes = new SortedList();
+                using (XmlTextReader xtr = new XmlTextReader(fullpath))
+                {
+                    xmldoc.Load(xtr);
+                    xtr.Close();
+                }
+
+                mediaNodes = xmldoc.SelectNodes("/media-types/media");
+                int numNodes = mediaNodes.Count;
+                if (numNodes > 0)
+                {
+                    for (int i = 0; i < numNodes; i++)
+                        filetypes.Add(mediaNodes[i].Attributes["content-type"].Value, mediaNodes[i].Attributes["error-format"].Value);
+                }
+
+                // add to cache w/ file dependency
+                ctx.Cache.Add(
+                    fullpath+"_error_formats",
+                    filetypes,
+                    new System.Web.Caching.CacheDependency(fullpath),
+                    System.Web.Caching.Cache.NoAbsoluteExpiration,
+                    System.Web.Caching.Cache.NoSlidingExpiration,
+                    System.Web.Caching.CacheItemPriority.High,
+                    null);
+
+            }
+
+            return (filetypes[contenttype] != null ? filetypes[contenttype].ToString() : string.Empty);
+        }
+
+        public string RenderError(string title, string message, string mtype)
+        {
+            string rtn = string.Empty;
+            string file = string.Empty;
+            string format = string.Empty;
+            string fullpath = string.Empty;
+
+            file = LookUpErrorFormat(mtype);
+            if(file!=string.Empty)
+            {
+                fullpath = HttpContext.Current.Server.MapPath(file);
+                format = (string)ctx.Cache.Get(fullpath);
+                if(format==null)
+                {
+                    format = string.Empty;
+                    using (StreamReader sr = new StreamReader(fullpath))
+                    {
+                        format = sr.ReadToEnd();
+                        sr.Close();
+                    }
+
+                    // add to cache w/ file dependency
+                    ctx.Cache.Add(
+                        fullpath,
+                        format,
+                        new System.Web.Caching.CacheDependency(fullpath),
+                        System.Web.Caching.Cache.NoAbsoluteExpiration,
+                        System.Web.Caching.Cache.NoSlidingExpiration,
+                        System.Web.Caching.CacheItemPriority.High,
+                        null);
+                }
+            }
+            else
+            {
+                format = "error:{0} - {1}";
+            }
+            return string.Format(format, title, message);
+        }
+
         public string XmlEncodeData(string data)
         {
 
@@ -891,13 +1019,17 @@ namespace Exyus
             {
                 for (int i = 0; i < ctx.Request.Cookies.Count; i++)
                 {
-                    args = safeAdd(args,"ck-" + ctx.Request.Cookies[i].Name, ctx.Request.Cookies[i].Value);
+                    args = safeAdd(args,"ck-" + ctx.Request.Cookies[i].Name, ctx.Request.Cookies[i].Value,true);
                 }
             }
             return args;
         }
 
-        private Hashtable safeAdd(Hashtable arg_set,string key, string value)
+        private Hashtable safeAdd(Hashtable arg_set, string key, string value)
+        {
+            return safeAdd(arg_set, key, value, false);
+        }
+        private Hashtable safeAdd(Hashtable arg_set,string key, string value, bool replace)
         {
             if (key.Length != 0)
             {
@@ -905,7 +1037,14 @@ namespace Exyus
                     key = "_" + key;
                 if (arg_set.ContainsKey(key))
                 {
-                    arg_set[key] = arg_set[key] + ";" + value;
+                    if(replace)
+                    {
+                        arg_set[key] = value;
+                    }
+                    else
+                    {
+                        arg_set[key] = arg_set[key] + ";" + value;
+                    }
                 }
                 else
                 {
