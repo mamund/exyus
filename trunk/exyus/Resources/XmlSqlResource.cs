@@ -152,25 +152,35 @@ namespace Exyus.Web
             catch (HttpException hex)
             {
                 this.StatusCode = (HttpStatusCode)hex.GetHttpCode();
-                xmlout.LoadXml(string.Format(Constants.fmt_xml_error, hex.Message));
-                out_text = util.FixEncoding(xmlout.OuterXml);
+                this.StatusDescription = hex.Message;
+                out_text = util.RenderError("http error", hex.Message, mtype);
             }
             catch (SqlXmlException sqex)
             {
+                string msg = string.Format("{0} (db)", Regex.Match(sqex.Message, rex_sqex).Groups[1].Value);
                 if (Regex.IsMatch(sqex.Message, rex_notfound))
+                {
                     this.StatusCode = HttpStatusCode.NotFound;
+                    this.StatusDescription = msg;
+                }
                 else
-                    this.StatusCode = HttpStatusCode.InternalServerError;
-                xmlout.LoadXml(string.Format(Constants.fmt_xml_error_db, Regex.Match(sqex.Message, rex_sqex).Groups[1].Value));
-                out_text = util.FixEncoding(xmlout.OuterXml);
+                {
+                    this.StatusCode = HttpStatusCode.BadRequest;
+                    this.StatusDescription = msg;
+                }
+                out_text = util.RenderError("db error", msg, mtype);
             }
             catch (Exception ex)
             {
                 this.StatusCode = HttpStatusCode.InternalServerError;
-                xmlout.LoadXml(string.Format(Constants.fmt_xml_error, ex.Message));
-                out_text = util.FixEncoding(xmlout.OuterXml);
+                this.StatusDescription = ex.Message;
+                out_text = util.RenderError("unknown error", ex.Message, mtype);
             }
 
+            if (mtype == Constants.cType_FormUrlEncoded)
+            {
+                mtype = Constants.cType_Html;
+            }
             this.Response = out_text;
 
             xmlin = null;
@@ -288,23 +298,29 @@ namespace Exyus.Web
             catch (HttpException hex)
             {
                 this.StatusCode = (HttpStatusCode)hex.GetHttpCode();
-                xmlout.LoadXml(string.Format(Constants.fmt_xml_error, hex.Message));
-                out_text = util.FixEncoding(xmlout.OuterXml);
+                this.StatusDescription = hex.Message;
+                out_text = util.RenderError("http error", hex.Message, mtype);
             }
             catch (SqlXmlException sqex)
             {
+                string msg = string.Format("{0} (db)", Regex.Match(sqex.Message, rex_sqex).Groups[1].Value);
                 if (Regex.IsMatch(sqex.Message, rex_notfound))
+                {
                     this.StatusCode = HttpStatusCode.NotFound;
+                    this.StatusDescription = msg;
+                }
                 else
-                    this.StatusCode = (System.Net.HttpStatusCode)424;
-                xmlout.LoadXml(string.Format(Constants.fmt_xml_error_db, Regex.Match(sqex.Message, rex_sqex).Groups[1].Value));
-                out_text = util.FixEncoding(xmlout.OuterXml);
+                {
+                    this.StatusCode = HttpStatusCode.BadRequest;
+                    this.StatusDescription = msg;
+                }
+                out_text = util.RenderError("db error", msg, mtype);
             }
             catch (Exception ex)
             {
                 this.StatusCode = HttpStatusCode.InternalServerError;
-                xmlout.LoadXml(string.Format(Constants.fmt_xml_error, ex.Message));
-                out_text = util.FixEncoding(xmlout.OuterXml);
+                this.StatusDescription = ex.Message;
+                out_text = util.RenderError("unknown error", ex.Message, mtype);
             }
 
             // return the results
@@ -394,7 +410,7 @@ namespace Exyus.Web
                     SchemaValidator sv = new SchemaValidator();
                     string sch_error = sv.Execute(xmlin, xsd_file);
                     if (sch_error != string.Empty)
-                        throw new HttpException(422, sch_error);
+                        throw new HttpException(400, sch_error);
                 }
 
                 // validate html
@@ -455,25 +471,36 @@ namespace Exyus.Web
             catch (HttpException hex)
             {
                 this.StatusCode = (HttpStatusCode)hex.GetHttpCode();
-                xmlout.LoadXml(string.Format(Constants.fmt_xml_error, hex.Message));
-                out_text = util.FixEncoding(xmlout.OuterXml);
+                this.StatusDescription = hex.Message;
+                out_text = util.RenderError("http error", hex.Message, mtype);
             }
             catch (SqlXmlException sqex)
             {
+                string msg = string.Format("{0} (db)", Regex.Match(sqex.Message, rex_sqex).Groups[1].Value);
                 if (Regex.IsMatch(sqex.Message, rex_notfound))
+                {
                     this.StatusCode = HttpStatusCode.NotFound;
+                    this.StatusDescription = msg;
+                }
                 else
-                    this.StatusCode = (System.Net.HttpStatusCode)424;
-                xmlout.LoadXml(string.Format(Constants.fmt_xml_error_db, Regex.Match(sqex.Message, rex_sqex).Groups[1].Value));
-                out_text = util.FixEncoding(xmlout.OuterXml);
+                {
+                    this.StatusCode = HttpStatusCode.BadRequest;
+                    this.StatusDescription = msg;
+                }
+                out_text = util.RenderError("db error", msg, mtype);
             }
             catch (Exception ex)
             {
                 this.StatusCode = HttpStatusCode.InternalServerError;
-                xmlout.LoadXml(string.Format(Constants.fmt_xml_error, ex.Message));
-                out_text = util.FixEncoding(xmlout.OuterXml);
+                this.StatusDescription = ex.Message;
+                out_text = util.RenderError("unknown error", ex.Message, mtype);
             }
 
+            // if we were using form-posting, reset to preferred content type (text/html, most likely)
+            if (this.ContentType == Constants.cType_FormUrlEncoded)
+            {
+                this.ContentType = original_contentType;
+            }
             this.Response = out_text;
 
             xmlin = null;
@@ -513,6 +540,7 @@ namespace Exyus.Web
 
             string XsdFile = this.Context.Server.MapPath(this.DocumentsFolder + "put.xsd");
             string XsdFileMtype = this.Context.Server.MapPath(this.DocumentsFolder + (mtype == string.Empty ? "put.xsd" : string.Format("put_{0}.xsd", ftype)));
+
             try
             {
                 // use regexp pattern to covert url into xml document
@@ -598,7 +626,7 @@ namespace Exyus.Web
                             this.Context.Request.Url.Scheme,
                             this.Context.Request.Url.DnsSafeHost,
                             this.Context.Request.RawUrl),
-                        "head", mtype);
+                            "head", (mtype==Constants.cType_FormUrlEncoded?"text/html":mtype));
 
                     // record exists, this must be an update
                     etag = util.GetHttpHeader(Constants.hdr_etag, (NameValueCollection)cl.ResponseHeaders);
@@ -625,7 +653,7 @@ namespace Exyus.Web
                             break;
                         // some other error, omgz!
                         default:
-                            put_error = hex2.Message + " Unable to create.";
+                            put_error = hex2.Message + " Unable to PUT.";
                             save_item = false;
                             break;
                     }
@@ -680,23 +708,29 @@ namespace Exyus.Web
             catch (HttpException hex)
             {
                 this.StatusCode = (HttpStatusCode)hex.GetHttpCode();
-                xmlout.LoadXml(string.Format(Constants.fmt_xml_error, hex.Message));
-                out_text = util.FixEncoding(xmlout.OuterXml);
+                this.StatusDescription = hex.Message;
+                out_text = util.RenderError("http error", hex.Message, mtype);
             }
             catch (SqlXmlException sqex)
             {
+                string msg = string.Format("{0} (db)", Regex.Match(sqex.Message, rex_sqex).Groups[1].Value);
                 if (Regex.IsMatch(sqex.Message, rex_notfound))
+                {
                     this.StatusCode = HttpStatusCode.NotFound;
+                    this.StatusDescription = msg;
+                }
                 else
-                    this.StatusCode = (System.Net.HttpStatusCode)424;
-                xmlout.LoadXml(string.Format(Constants.fmt_xml_error_db, Regex.Match(sqex.Message, rex_sqex).Groups[1].Value));
-                out_text = util.FixEncoding(xmlout.OuterXml);
+                {
+                    this.StatusCode = HttpStatusCode.BadRequest;
+                    this.StatusDescription = msg;
+                }
+                out_text = util.RenderError("db error", msg, mtype);
             }
             catch (Exception ex)
             {
                 this.StatusCode = HttpStatusCode.InternalServerError;
-                xmlout.LoadXml(string.Format(Constants.fmt_xml_error, ex.Message));
-                out_text = util.FixEncoding(xmlout.OuterXml);
+                this.StatusDescription = ex.Message;
+                out_text = util.RenderError("unknown error", ex.Message, mtype);
             }
             this.Response = out_text;
 

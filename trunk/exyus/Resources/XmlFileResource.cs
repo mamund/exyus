@@ -532,7 +532,7 @@ namespace Exyus.Web
                             this.Context.Request.Url.Scheme,
                             this.Context.Request.Url.DnsSafeHost,
                             this.Context.Request.RawUrl),
-                        "head", this.ContentType);
+                        "head", (mtype == Constants.cType_FormUrlEncoded ? "text/html" : mtype));
 
                     // record exists, this must be an update
                     etag = util.GetHttpHeader(Constants.hdr_etag, (NameValueCollection)cl.ResponseHeaders);
@@ -559,7 +559,7 @@ namespace Exyus.Web
                             break;
                         // some other error, omgz!
                         default:
-                            put_error = hex2.Message + " Unable to create.";
+                            put_error = hex2.Message + " Unable to PUT.";
                             save_item = false;
                             break;
                     }
