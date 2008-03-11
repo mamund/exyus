@@ -44,7 +44,7 @@ namespace Exyus.Samples
     }
 
     // handle form-posting for updates
-    [UriPattern(@"/ugdata/update/(?<id>[0-9]*)\.xcs")]
+    [UriPattern(@"/ugdata/(?<id>[0-9]*);update\.xcs")]
     [MediaTypes("application/x-www-form-urlencoded")]
     class UGDataUpdate : HTTPResource
     {
@@ -65,6 +65,17 @@ namespace Exyus.Samples
             // copy media types to make things easier
             mediaTypes = util.GetMediaTypes(this);
             
+        }
+
+        public override void Get()
+        {
+            Hashtable arg_list = util.ParseUrlPattern(this.Context.Request.RawUrl, this.UrlPattern);
+            if (!arg_list.Contains("id"))
+            {
+                throw new HttpException(400, "Missing document id");
+            }
+            string id = arg_list["id"].ToString().Replace(";update", "");
+            this.Context.Response.Redirect("/xcs/ugdata/" + id);
         }
 
         public override void Post()
@@ -113,7 +124,7 @@ namespace Exyus.Samples
     }
 
     // handle form-posting for deletes
-    [UriPattern(@"/ugdata/delete/(?<id>[0-9]*)\.xcs")]
+    [UriPattern(@"/ugdata/(?<id>[0-9]*);delete\.xcs")]
     [MediaTypes("application/x-www-form-urlencoded")]
     class UGDataDelete : HTTPResource
     {
@@ -134,6 +145,17 @@ namespace Exyus.Samples
             // copy media types to make things easier
             mediaTypes = util.GetMediaTypes(this);
 
+        }
+
+        public override void Get()
+        {
+            Hashtable arg_list = util.ParseUrlPattern(this.Context.Request.RawUrl, this.UrlPattern);
+            if (!arg_list.Contains("id"))
+            {
+                throw new HttpException(400, "Missing document id");
+            }
+            string id = arg_list["id"].ToString().Replace(";delete", "");
+            this.Context.Response.Redirect("/xcs/ugdata/"+id);
         }
 
         public override void Post()
