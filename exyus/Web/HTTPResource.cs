@@ -200,38 +200,31 @@ namespace Exyus.Web
         #region public methods
         public virtual void Get()
         {
-            this.StatusCode =  HttpStatusCode.MethodNotAllowed;
-            this.Response = new object();
+            throw new HttpException((int)HttpStatusCode.MethodNotAllowed, "Method Not Allowed");
         }
         public virtual void Post()
         {
-            this.StatusCode = HttpStatusCode.MethodNotAllowed;
-            this.Response = new object();
+            throw new HttpException((int)HttpStatusCode.MethodNotAllowed, "Method Not Allowed");
         }
         public virtual void Put()
         {
-            this.StatusCode = HttpStatusCode.MethodNotAllowed;
-            this.Response = new object();
+            throw new HttpException((int)HttpStatusCode.MethodNotAllowed, "Method Not Allowed");
         }
         public virtual void Delete()
         {
-            this.StatusCode = HttpStatusCode.MethodNotAllowed;
-            this.Response = new object();
+            throw new HttpException((int)HttpStatusCode.MethodNotAllowed, "Method Not Allowed");
         }
         public virtual void Head()
         {
-            this.StatusCode = HttpStatusCode.MethodNotAllowed;
-            this.Response = new object();
+            throw new HttpException((int)HttpStatusCode.MethodNotAllowed, "Method Not Allowed");
         }
         public virtual void Options()
         {
-            this.StatusCode = HttpStatusCode.MethodNotAllowed;
-            this.Response = new object();
+            throw new HttpException((int)HttpStatusCode.MethodNotAllowed, "Method Not Allowed");
         }
         public virtual void Unknown()
         {
-            this.StatusCode = HttpStatusCode.MethodNotAllowed;
-            this.Response = new object();
+            throw new HttpException((int)HttpStatusCode.MethodNotAllowed, "Method Not Allowed");
         }
         #endregion
 
