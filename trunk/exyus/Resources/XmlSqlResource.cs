@@ -129,7 +129,7 @@ namespace Exyus.Web
                 if (File.Exists(xsl_file))
                 {
                     XslTransformer xslt = new XslTransformer();
-                    string cmdtext = xslt.ExecuteText(xmlin, xsl_file);
+                    string cmdtext = xslt.ExecuteText(xmlin, xsl_file,arg_list);
 
                     // execute sql and return empty
                     SqlXmlCommand cmd = new SqlXmlCommand(util.GetConfigSectionItem(Constants.cfg_exyusSettings, this.ConnectionString));
