@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeBreaker.cs" />
+    <Compile Include="PublishPattern.cs" />
     <Compile Include="ServerMashup.cs" />
     <Compile Include="Editable.cs" />
     <Compile Include="Postable.cs" />
