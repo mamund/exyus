@@ -1,0 +1,12 @@
+C:\Projects\Exyus\google-svn\trunk\ugdata-cmd\ugdata-cmd\obj\Debug\ResolveAssemblyReference.cache
+C:\Projects\Exyus\google-svn\trunk\ugdata-cmd\ugdata-cmd\bin\Debug\ugdata-cmd.exe
+C:\Projects\Exyus\google-svn\trunk\ugdata-cmd\ugdata-cmd\bin\Debug\ugdata-cmd.pdb
+C:\Projects\Exyus\google-svn\trunk\ugdata-cmd\ugdata-cmd\bin\Debug\Exyus.dll
+C:\Projects\Exyus\google-svn\trunk\ugdata-cmd\ugdata-cmd\bin\Debug\Nii.JSON.dll
+C:\Projects\Exyus\google-svn\trunk\ugdata-cmd\ugdata-cmd\bin\Debug\Mvp.Xml.dll
+C:\Projects\Exyus\google-svn\trunk\ugdata-cmd\ugdata-cmd\bin\Debug\Nii.JSON.pdb
+C:\Projects\Exyus\google-svn\trunk\ugdata-cmd\ugdata-cmd\bin\Debug\Exyus.pdb
+C:\Projects\Exyus\google-svn\trunk\ugdata-cmd\ugdata-cmd\bin\Debug\Mvp.Xml.pdb
+C:\Projects\Exyus\google-svn\trunk\ugdata-cmd\ugdata-cmd\bin\Debug\Mvp.Xml.xml
+C:\Projects\Exyus\google-svn\trunk\ugdata-cmd\ugdata-cmd\obj\Debug\ugdata-cmd.exe
+C:\Projects\Exyus\google-svn\trunk\ugdata-cmd\ugdata-cmd\obj\Debug\ugdata-cmd.pdb
