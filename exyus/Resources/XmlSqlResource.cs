@@ -157,8 +157,14 @@ namespace Exyus.Web
             }
             catch (SqlXmlException sqex)
             {
-                string msg = string.Format("{0} (db)", Regex.Match(sqex.Message, rex_sqex).Groups[1].Value);
-                if (Regex.IsMatch(sqex.Message, rex_notfound))
+                string msg = string.Format("{0}", Regex.Match(sqex.Message, rex_sqex).Groups[1].Value);
+                if (msg==string.Empty)
+                {
+                    msg = sqex.Message;
+                }
+                msg += " (db)";
+
+                if (Regex.IsMatch(msg, rex_notfound))
                 {
                     this.StatusCode = HttpStatusCode.NotFound;
                     this.StatusDescription = msg;
@@ -303,8 +309,14 @@ namespace Exyus.Web
             }
             catch (SqlXmlException sqex)
             {
-                string msg = string.Format("{0} (db)", Regex.Match(sqex.Message, rex_sqex).Groups[1].Value);
-                if (Regex.IsMatch(sqex.Message, rex_notfound))
+                string msg = string.Format("{0}", Regex.Match(sqex.Message, rex_sqex).Groups[1].Value);
+                if (msg == string.Empty)
+                {
+                    msg = sqex.Message;
+                }
+                msg += " (db)";
+
+                if (Regex.IsMatch(msg, rex_notfound))
                 {
                     this.StatusCode = HttpStatusCode.NotFound;
                     this.StatusDescription = msg;
@@ -476,8 +488,14 @@ namespace Exyus.Web
             }
             catch (SqlXmlException sqex)
             {
-                string msg = string.Format("{0} (db)", Regex.Match(sqex.Message, rex_sqex).Groups[1].Value);
-                if (Regex.IsMatch(sqex.Message, rex_notfound))
+                string msg = string.Format("{0}", Regex.Match(sqex.Message, rex_sqex).Groups[1].Value);
+                if (msg == string.Empty)
+                {
+                    msg = sqex.Message;
+                }
+                msg += " (db)";
+
+                if (Regex.IsMatch(msg, rex_notfound))
                 {
                     this.StatusCode = HttpStatusCode.NotFound;
                     this.StatusDescription = msg;
@@ -713,8 +731,14 @@ namespace Exyus.Web
             }
             catch (SqlXmlException sqex)
             {
-                string msg = string.Format("{0} (db)", Regex.Match(sqex.Message, rex_sqex).Groups[1].Value);
-                if (Regex.IsMatch(sqex.Message, rex_notfound))
+                string msg = string.Format("{0}", Regex.Match(sqex.Message, rex_sqex).Groups[1].Value);
+                if (msg == string.Empty)
+                {
+                    msg = sqex.Message;
+                }
+                msg += " (db)";
+
+                if (Regex.IsMatch(msg, rex_notfound))
                 {
                     this.StatusCode = HttpStatusCode.NotFound;
                     this.StatusDescription = msg;
