@@ -44,7 +44,7 @@ namespace Exyus.Samples
     }
 
     // handle form-posting for updates
-    [UriPattern(@"/ugdata/(?<id>[0-9]*);update\.xcs")]
+    [UriPattern(@"/ugdata/(?<id>[0-9]*);put\.xcs")]
     [MediaTypes("application/x-www-form-urlencoded")]
     class UGDataUpdate : HTTPResource
     {
@@ -74,7 +74,7 @@ namespace Exyus.Samples
             {
                 throw new HttpException(400, "Missing document id");
             }
-            string id = arg_list["id"].ToString().Replace(";update", "");
+            string id = arg_list["id"].ToString().Replace(";put", "");
             this.Context.Response.Redirect("/xcs/ugdata/" + id);
         }
 
@@ -204,6 +204,47 @@ namespace Exyus.Samples
         public UGDataJSON()
         {
             this.Content = Helper.ReadFile("/xcs/files/ugdata/json.html");
+        }
+    }
+
+    // return source code files
+    [UriPattern(@"/ugdata/source/(?:\.xcs)(?:.*)?")]
+    [MediaTypes("text/plain")]
+    class UGDataSource : PlainTextViewer
+    {
+        public UGDataSource()
+        {
+            this.MaxAge = 600;
+            this.UseValidationCaching = true;
+            this.ShowList = true;
+            this.Title = "UGData Source Documents";
+
+            this.Files.Add("ugdata.cs", "/xcs/documents/ugdata/source/ugdata.cs");
+            this.Files.Add("json.html", "/xcs/files/ugdata/json.html");
+            this.Files.Add("json-ugdata.js", "/xcs/files/ugdata/json-ugdata.js");
+            this.Files.Add("args.xsd", "/xcs/documents/ugdata/args.xsd");
+            this.Files.Add("args.xsl", "/xcs/documents/ugdata/args.xsl");
+            this.Files.Add("delete.xsd", "/xcs/documents/ugdata/delete.xsd");
+            this.Files.Add("delete_request.xsl", "/xcs/documents/ugdata/delete_request.xsl");
+            this.Files.Add("get_request_html.xsl", "/xcs/documents/ugdata/get_request_html.xsl");
+            this.Files.Add("get_request_json.xsl", "/xcs/documents/ugdata/get_request_json.xsl");
+            this.Files.Add("get_request_xml.xsl", "/xcs/documents/ugdata/get_request_xml.xsl");
+            this.Files.Add("get_response_html.xsl", "/xcs/documents/ugdata/get_response_html.xsl");
+            this.Files.Add("get_response_json.xsl", "/xcs/documents/ugdata/get_response_json.xsl");
+            this.Files.Add("post_form.xsd", "/xcs/documents/ugdata/post_form.xsd");
+            this.Files.Add("post_html.xsd", "/xcs/documents/ugdata/post_html.xsd");
+            this.Files.Add("post_json.xsd", "/xcs/documents/ugdata/post_json.xsd");
+            this.Files.Add("post_request_form.xsl", "/xcs/documents/ugdata/post_request_form.xsl");
+            this.Files.Add("post_request_json.xsl", "/xcs/documents/ugdata/post_request_json.xsl");
+            this.Files.Add("post_request_xml.xsl", "/xcs/documents/ugdata/post_request_xml.xsl");
+            this.Files.Add("post_response_form.xsl", "/xcs/documents/ugdata/post_response_form.xsl");
+            this.Files.Add("post_xml.xsd", "/xcs/documents/ugdata/post_xml.xsd");
+            this.Files.Add("put_args.xsd", "/xcs/documents/ugdata/put_args.xsd");
+            this.Files.Add("put_json.xsd", "/xcs/documents/ugdata/put_json.xsd");
+            this.Files.Add("put_request_form.xsl", "/xcs/documents/ugdata/put_request_form.xsl");
+            this.Files.Add("put_request_json.xsl", "/xcs/documents/ugdata/put_request_json.xsl");
+            this.Files.Add("put_request_xml.xsl", "/xcs/documents/ugdata/put_request_xml.xsl");
+            this.Files.Add("put_xml.xsd", "/xcs/documents/ugdata/put_xml.xsd");
         }
     }
 }
