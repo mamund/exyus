@@ -120,7 +120,7 @@ namespace Exyus.Web
                     SchemaValidator sv = new SchemaValidator();
                     string sch_error = sv.Execute(xmlin, xsd_file);
                     if (sch_error != string.Empty)
-                        throw new HttpException(422, sch_error);
+                        throw new HttpException(400, sch_error);
                 }
 
                 // transform xmldoc into sql
@@ -263,7 +263,7 @@ namespace Exyus.Web
                     SchemaValidator sv = new SchemaValidator();
                     string sch_error = sv.Execute(xmlin, xsd_file);
                     if (sch_error != string.Empty)
-                        throw new HttpException(422, sch_error);
+                        throw new HttpException(400, sch_error);
                 }
 
                 // transform args into sql and execute
@@ -611,7 +611,7 @@ namespace Exyus.Web
                     SchemaValidator sv = new SchemaValidator();
                     string sch_error = sv.Execute(xmlin, xsd_file);
                     if (sch_error != string.Empty)
-                        throw new HttpException(422, sch_error);
+                        throw new HttpException(400, sch_error);
                 }
 
                 // validate html nodes
