@@ -74,7 +74,7 @@ namespace Exyus.Samples
             {
                 throw new HttpException(400, "Missing document id");
             }
-            string id = arg_list["id"].ToString().Replace(";put", "");
+            string id = arg_list["id"].ToString();
             this.Context.Response.Redirect("/xcs/ugdata/" + id);
         }
 
@@ -154,7 +154,7 @@ namespace Exyus.Samples
             {
                 throw new HttpException(400, "Missing document id");
             }
-            string id = arg_list["id"].ToString().Replace(";delete", "");
+            string id = arg_list["id"].ToString();
             this.Context.Response.Redirect("/xcs/ugdata/"+id);
         }
 
