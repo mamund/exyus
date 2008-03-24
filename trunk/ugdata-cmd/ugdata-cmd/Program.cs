@@ -105,7 +105,7 @@ namespace ugdata_cmd
         string fmt_item = "<member><firstname>{0}</firstname><lastname>{1}</lastname><birthdate>{2}</birthdate><experience>{3}</experience></member>";
         string valid_experience = "None, WhatIsREST, ICanHitF1, GoogleRocks, CallMeRoy,";
 
-        public string url = "http://localhost/xcs/ugdata/";
+        public string url = "http://exyus.com/xcs/ugdata/";
 
         public UGData(){}
         public UGData(string url)
