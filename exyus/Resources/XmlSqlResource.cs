@@ -39,6 +39,7 @@ namespace Exyus.Web
         private string absoluteUri = string.Empty;
         private Cache ch = new Cache();
 
+        protected Hashtable shared_args = new Hashtable();
 
         public XmlSqlResource()
         {
@@ -91,6 +92,13 @@ namespace Exyus.Web
             {
                 // use regexp pattern to covert url into collection
                 arg_list = util.ParseUrlPattern(absoluteUri, this.UrlPattern);
+                if (shared_args != null)
+                {
+                    foreach (string key in shared_args.Keys)
+                    {
+                        util.SafeAdd(ref arg_list, key, shared_args[key].ToString());
+                    }
+                }
 
                 // transform arglist into xml document
                 xsl_file = string.Empty;
@@ -240,6 +248,13 @@ namespace Exyus.Web
                 arg_list = util.ParseUrlPattern(absoluteUri, this.UrlPattern);
                 util.SafeAdd(ref arg_list, "_title", this.Title);
                 util.SafeAdd(ref arg_list, "_last-modified", string.Format("{0:s}Z", DateTime.UtcNow));
+                if (shared_args != null)
+                {
+                    foreach (string key in shared_args.Keys)
+                    {
+                        util.SafeAdd(ref arg_list, key, shared_args[key].ToString());
+                    }
+                }
 
                 // transform into proper argument list
                 xsl_file = string.Empty;
@@ -385,6 +400,13 @@ namespace Exyus.Web
                 arg_list = util.ParseUrlPattern(absoluteUri, this.UrlPattern);
                 util.SafeAdd(ref arg_list, "_title", this.Title);
                 util.SafeAdd(ref arg_list, "_last-modified", string.Format("{0:s}Z", DateTime.UtcNow));
+                if (shared_args != null)
+                {
+                    foreach (string key in shared_args.Keys)
+                    {
+                        util.SafeAdd(ref arg_list, key, shared_args[key].ToString());
+                    }
+                }
 
                 // since GET has no body, build 'stub xmldocument'
                 xmlin.LoadXml("<root />");
@@ -434,7 +456,7 @@ namespace Exyus.Web
                 if (File.Exists(xsl_file))
                 {
                     xslt = new XslTransformer();
-                    string cmdtext = xslt.ExecuteText(xmlin, xsl_file);
+                    string cmdtext = xslt.ExecuteText(xmlin, xsl_file, arg_list);
 
                     // execute sql and return results
                     SqlXmlCommand cmd = new SqlXmlCommand(util.GetConfigSectionItem(Constants.cfg_exyusSettings, ConnectionString));
@@ -565,6 +587,13 @@ namespace Exyus.Web
                 arg_list = util.ParseUrlPattern(absoluteUri, this.UrlPattern);
                 util.SafeAdd(ref arg_list, "_title", this.Title);
                 util.SafeAdd(ref arg_list, "_last-modified", string.Format("{0:s}Z", DateTime.UtcNow));
+                if (shared_args != null)
+                {
+                    foreach (string key in shared_args.Keys)
+                    {
+                        util.SafeAdd(ref arg_list, key, shared_args[key].ToString());
+                    }
+                }
 
                 // transform into proper argument list
                 xmlargs.LoadXml("<root />");

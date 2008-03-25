@@ -36,6 +36,8 @@ namespace Exyus.Web
         private string absoluteUri = string.Empty;
         Cache ch = new Cache();
 
+        protected Hashtable shared_args = new Hashtable();
+
         public XmlFileResource()
         {
             if(this.ContentType==null || this.ContentType==string.Empty)
@@ -77,6 +79,13 @@ namespace Exyus.Web
 
                 // use regexp pattern to covert url into collection
                 arg_list = util.ParseUrlPattern(absoluteUri, this.UrlPattern);
+                if (shared_args != null)
+                {
+                    foreach (string key in shared_args.Keys)
+                    {
+                        util.SafeAdd(ref arg_list, key, shared_args[key].ToString());
+                    }
+                }
 
                 // resolve storagefolder template
                 stor_folder = util.ReplaceArgs(this.StorageFolder, arg_list);
@@ -177,6 +186,13 @@ namespace Exyus.Web
                 arg_list = util.ParseUrlPattern(absoluteUri, this.UrlPattern);
                 util.SafeAdd(ref arg_list, "_title", this.Title);
                 util.SafeAdd(ref arg_list, "_last-modified", string.Format("{0:s}Z", DateTime.UtcNow));
+                if (shared_args != null)
+                {
+                    foreach (string key in shared_args.Keys)
+                    {
+                        util.SafeAdd(ref arg_list, key, shared_args[key].ToString());
+                    }
+                }
 
                 // since GET has no body, build 'stub xmldocument'
                 xmlin.LoadXml("<root />");
@@ -313,6 +329,13 @@ namespace Exyus.Web
 
                 // use regexp pattern to covert url into xml document
                 arg_list = util.ParseUrlPattern(absoluteUri, this.UrlPattern);
+                if (shared_args != null)
+                {
+                    foreach (string key in shared_args.Keys)
+                    {
+                        util.SafeAdd(ref arg_list, key, shared_args[key].ToString());
+                    }
+                }
 
                 // validate args
                 xsl_file = (File.Exists(XslPostArgs) ? XslPostArgs : XslArgs);
@@ -443,6 +466,14 @@ namespace Exyus.Web
             {
                 // use regexp pattern to covert url into xml document
                 arg_list = util.ParseUrlPattern(absoluteUri, this.UrlPattern);
+                if (shared_args != null)
+                {
+                    foreach (string key in shared_args.Keys)
+                    {
+                        util.SafeAdd(ref arg_list, key, shared_args[key].ToString());
+                    }
+                }
+                
                 stor_folder = util.ReplaceArgs(this.StorageFolder, arg_list);
 
                 // validate args
