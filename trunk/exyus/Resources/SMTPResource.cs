@@ -64,6 +64,7 @@ namespace Exyus.Web
             string xsl_file = string.Empty;
             string xsd_file = string.Empty;
             string original_contentType = this.ContentType;
+            string out_text = string.Empty;
 
             absoluteUri = this.Context.Request.RawUrl;
 
@@ -86,6 +87,14 @@ namespace Exyus.Web
 
                 // use regexp pattern to covert url into xml document
                 arg_list = util.ParseUrlPattern(absoluteUri, this.UrlPattern);
+                util.SafeAdd(ref arg_list, "_media-type", mtype);
+                if (shared_args != null)
+                {
+                    foreach (string key in shared_args.Keys)
+                    {
+                        util.SafeAdd(ref arg_list, key, shared_args[key].ToString());
+                    }
+                }
 
                 // validate args
                 xsl_file = (File.Exists(XslPostArgs) ? XslPostArgs : XslArgs);
@@ -132,7 +141,7 @@ namespace Exyus.Web
                 if (File.Exists(xsl_file))
                 {
                     XslTransformer xslt = new XslTransformer();
-                    string out_text = xslt.ExecuteText(xmlin, xsl_file, arg_list);
+                    out_text = xslt.ExecuteText(xmlin, xsl_file, arg_list);
                     xmlout.LoadXml(out_text);
                 }
                 else
@@ -220,19 +229,16 @@ namespace Exyus.Web
             {
                 this.StatusCode = (HttpStatusCode)hex.GetHttpCode();
                 this.StatusDescription = hex.Message;
-                xmlout.LoadXml(string.Format(Constants.fmt_xml_error, util.XmlEncodeData(hex.Message)));
+                out_text = util.RenderError("http error", hex.Message, mtype);
             }
             catch (Exception ex)
             {
                 this.StatusCode = HttpStatusCode.InternalServerError;
                 this.StatusDescription = ex.Message;
-                xmlout.LoadXml(string.Format(Constants.fmt_xml_error, util.XmlEncodeData(ex.Message)));
+                out_text = util.RenderError("unknown error", ex.Message, mtype);
             }
 
-            if (xmlout != null)
-                this.Response = util.FixEncoding(xmlout.OuterXml);
-            else
-                this.Response = null;
+            this.Response = out_text;
 
             xmlin = null;
             xmlout = null;
