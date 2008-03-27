@@ -2,6 +2,7 @@ using System;
 using System.Web;
 using System.Xml;
 using System.Xml.Serialization;
+using System.Collections;
 using System.Collections.Specialized;
 
 using System.Net;
@@ -30,6 +31,8 @@ namespace Exyus.Web
         private string _statusdescription = string.Empty;
         private string _location = string.Empty;
         #endregion
+
+        protected Hashtable shared_args = new Hashtable();
 
         #region public fields
         public string[] ImmediateCacheUriTemplates = null;

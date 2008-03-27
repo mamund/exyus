@@ -70,16 +70,18 @@ namespace Exyus.Web
             catch (HttpException hex)
             {
                 this.StatusCode = (HttpStatusCode)hex.GetHttpCode();
-                out_text = string.Format(Constants.fmt_xml_error_inc, hex.Message, this.Context.Request.Url, file);
+                this.StatusDescription = hex.Message;
+                out_text = util.RenderError("unknown error", hex.Message, mtype);
             }
             catch (Exception ex)
             {
                 this.StatusCode = HttpStatusCode.InternalServerError;
-                out_text = string.Format(Constants.fmt_xml_error_inc, ex.Message);
+                this.StatusDescription = ex.Message;
+                out_text = util.RenderError("unknown error", ex.Message, mtype);
             }
 
             // return the results
-            this.Response = out_text;
+            this.Response = util.FixEncoding(out_text);
 
             xmlout = null;
         }

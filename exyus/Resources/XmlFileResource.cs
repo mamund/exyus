@@ -36,8 +36,6 @@ namespace Exyus.Web
         private string absoluteUri = string.Empty;
         Cache ch = new Cache();
 
-        protected Hashtable shared_args = new Hashtable();
-
         public XmlFileResource()
         {
             if(this.ContentType==null || this.ContentType==string.Empty)
@@ -66,6 +64,11 @@ namespace Exyus.Web
             string out_text = string.Empty;
             string stor_folder = string.Empty;
 
+            // determine mediatype for this request
+            // and adjust for response, if need
+            string mtype = util.SetMediaType(this, mediaTypes);
+            string ftype = util.LookUpFileType(mtype);
+
             absoluteUri = this.Context.Request.RawUrl;
 
             try
@@ -79,6 +82,7 @@ namespace Exyus.Web
 
                 // use regexp pattern to covert url into collection
                 arg_list = util.ParseUrlPattern(absoluteUri, this.UrlPattern);
+                util.SafeAdd(ref arg_list, "_media-type", mtype);
                 if (shared_args != null)
                 {
                     foreach (string key in shared_args.Keys)
@@ -186,6 +190,7 @@ namespace Exyus.Web
                 arg_list = util.ParseUrlPattern(absoluteUri, this.UrlPattern);
                 util.SafeAdd(ref arg_list, "_title", this.Title);
                 util.SafeAdd(ref arg_list, "_last-modified", string.Format("{0:s}Z", DateTime.UtcNow));
+                util.SafeAdd(ref arg_list, "_media-type", mtype);
                 if (shared_args != null)
                 {
                     foreach (string key in shared_args.Keys)
@@ -329,6 +334,7 @@ namespace Exyus.Web
 
                 // use regexp pattern to covert url into xml document
                 arg_list = util.ParseUrlPattern(absoluteUri, this.UrlPattern);
+                util.SafeAdd(ref arg_list, "_media-type", mtype);
                 if (shared_args != null)
                 {
                     foreach (string key in shared_args.Keys)

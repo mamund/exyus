@@ -39,8 +39,6 @@ namespace Exyus.Web
         private string absoluteUri = string.Empty;
         private Cache ch = new Cache();
 
-        protected Hashtable shared_args = new Hashtable();
-
         public XmlSqlResource()
         {
             if (this.ContentType == null || this.ContentType == string.Empty)
@@ -92,6 +90,7 @@ namespace Exyus.Web
             {
                 // use regexp pattern to covert url into collection
                 arg_list = util.ParseUrlPattern(absoluteUri, this.UrlPattern);
+                util.SafeAdd(ref arg_list, "_media-type", mtype);
                 if (shared_args != null)
                 {
                     foreach (string key in shared_args.Keys)
@@ -248,6 +247,7 @@ namespace Exyus.Web
                 arg_list = util.ParseUrlPattern(absoluteUri, this.UrlPattern);
                 util.SafeAdd(ref arg_list, "_title", this.Title);
                 util.SafeAdd(ref arg_list, "_last-modified", string.Format("{0:s}Z", DateTime.UtcNow));
+                util.SafeAdd(ref arg_list, "_media-type", mtype);
                 if (shared_args != null)
                 {
                     foreach (string key in shared_args.Keys)
@@ -400,6 +400,7 @@ namespace Exyus.Web
                 arg_list = util.ParseUrlPattern(absoluteUri, this.UrlPattern);
                 util.SafeAdd(ref arg_list, "_title", this.Title);
                 util.SafeAdd(ref arg_list, "_last-modified", string.Format("{0:s}Z", DateTime.UtcNow));
+                util.SafeAdd(ref arg_list, "_media-type", mtype);
                 if (shared_args != null)
                 {
                     foreach (string key in shared_args.Keys)
@@ -587,6 +588,7 @@ namespace Exyus.Web
                 arg_list = util.ParseUrlPattern(absoluteUri, this.UrlPattern);
                 util.SafeAdd(ref arg_list, "_title", this.Title);
                 util.SafeAdd(ref arg_list, "_last-modified", string.Format("{0:s}Z", DateTime.UtcNow));
+                util.SafeAdd(ref arg_list, "_media-type", mtype);
                 if (shared_args != null)
                 {
                     foreach (string key in shared_args.Keys)
