@@ -7,18 +7,20 @@ namespace Exyus.Samples.CodeBreak
 {
     // landing page for the game site
     [UriPattern(@"/codebreaker/\.xcs")]
-    [MediaTypes("text/html")]
-    class CodeBreaker : XmlFileResource
+    [MediaTypes("text/html","text/xml")]
+    class CodeBreaker : XmlPageResource
     {
         Utility util = new Utility();
 
         public CodeBreaker()
         {
             this.ContentType = "text/html";
-            this.AllowDelete = false;
-            this.AllowPost = false;
-            this.DocumentsFolder = "~/documents/codebreaker/";
-            this.StorageFolder = "~/storage/codebreaker/";
+            this.TemplateXsl = "~/documents/codebreaker/cb-home_{ftype}.xsl";
+
+            // don't cache this resource!
+            this.LocalMaxAge = 0;
+            this.MaxAge = 0;
+            this.UseValidationCaching = false;
         }
 
         public override void Get()
@@ -33,6 +35,8 @@ namespace Exyus.Samples.CodeBreak
                 codekey = util.UID();
             }
             util.CookieWrite(codekey_id, codekey, 30, "");
+
+            this.shared_args.Add(codekey_id, codekey);
 
             base.Get();
         }
