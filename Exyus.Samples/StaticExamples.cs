@@ -77,7 +77,6 @@ namespace Exyus.Samples.StaticExamples
         {
             Utility util = new Utility();
             string out_text = string.Empty;
-            util.SetMediaType(this);
 
             switch (this.ContentType)
             {
