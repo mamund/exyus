@@ -2,11 +2,11 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyVersion("0.5.*")]
-[assembly: AssemblyFileVersion("0.5.*")]
+[assembly: AssemblyVersion("0.7.*")]
+[assembly: AssemblyFileVersion("0.7.*")]
 
 [assembly: AssemblyTitle("Exyus")]
-[assembly: AssemblyDescription("2008-01")]
+[assembly: AssemblyDescription("2008-03")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("amundsen.com, inc.")]
 [assembly: AssemblyProduct("Exyus")]

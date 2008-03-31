@@ -47,6 +47,16 @@ namespace Exyus
 
     public class Utility
     {
+        public string GetAllowedMediaTypes(string[] mediaTypes)
+        {
+            string rtn = string.Empty;
+            for (int i = 0; i < mediaTypes.Length; i++)
+            {
+                rtn += (i > 0 ? "," : "");
+                rtn += mediaTypes[i];
+            }
+            return rtn;
+        }
         public NetworkCredential GetCurrentCredentials(HTTPResource r)
         {
             NetworkCredential nc = null;
@@ -431,13 +441,16 @@ namespace Exyus
             MimeParser mp = new MimeParser(accept);
             string mtype = mp.GetBestFit(mediaTypes, rs.ContentType);
             if (mtype == string.Empty)
+            {
+                rs.Context.Response.AppendHeader("X-Acceptable", rs.AllowedMediaTypes);
                 throw new HttpException((int)HttpStatusCode.NotAcceptable, HttpStatusCode.NotAcceptable.ToString());
+            }
             else
             {
                 // force vary header, conn-neg results in new mime-type
                 if (mtype != rs.ContentType)
                     rs.Context.Response.AppendHeader("vary", "accept");
-                
+
                 // set the mime-type for this request
                 rs.ContentType = mtype;
             }
@@ -534,10 +547,14 @@ namespace Exyus
             return data;
         }
 
-        public Hashtable ParseUrlPattern(string url, string pattern)
+        public void ParseUrlPattern(ref Hashtable arg_list, string url, string pattern)
+        {
+            ParseUrlPattern(ref arg_list, url, pattern, true);
+        }
+        public void ParseUrlPattern(ref Hashtable arg_list, string url, string pattern, bool replace)
         {
             string name = string.Empty;
-            Hashtable args = new Hashtable();
+            //Hashtable args = new Hashtable();
 
             Regex r = new Regex(pattern);
             GroupCollection gcoll = r.Match(url).Groups;
@@ -549,10 +566,11 @@ namespace Exyus
                 // fix numeric group name
                 if (Regex.IsMatch(name, "^[0-9]+$"))
                     name = "arg" + name;
-                args.Add(name, gcoll[i].Value);
+                safeAdd(arg_list,name,gcoll[i].Value,replace);
+                //args.Add(name, gcoll[i].Value);
             }
 
-            return args;
+            //return args;
         }
         public string AuthFormUrl(string uri)
         {

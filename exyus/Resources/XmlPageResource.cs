@@ -17,12 +17,9 @@ namespace Exyus.Web
 
         string file = string.Empty;
         string url = string.Empty;
-        private string[] mediaTypes = null;
 
         public string TemplateXml = string.Empty;
         public string TemplateXsl = string.Empty;
-        public string UrlPattern = string.Empty;
-        public string Title = string.Empty;
 
         public XmlPageResource()
         {
@@ -53,15 +50,6 @@ namespace Exyus.Web
             {
                 this.ContentType = Constants.cType_Html;
             }
-
-            //get first pattern (if none set already)
-            if (this.UrlPattern == null || this.UrlPattern == string.Empty)
-                this.UrlPattern = ((UriPattern)this.GetType().GetCustomAttributes(typeof(UriPattern), false)[0]).Patterns[0];
-
-            if (this.Title == string.Empty)
-                this.Title = this.GetType().ToString();
-
-            mediaTypes = ((MediaTypes)this.GetType().GetCustomAttributes(typeof(MediaTypes), false)[0]).Types;
         }
 
         public override void Head()
@@ -74,29 +62,12 @@ namespace Exyus.Web
             XmlFileReader xfr = new XmlFileReader();
             XmlDocument xmlout = new XmlDocument();
             string out_text = string.Empty;
-            Hashtable arg_list = new Hashtable();
-            string absoluteUri = this.Context.Request.RawUrl;
-
-            string mtype = util.SetMediaType(this);
-            string ftype = util.LookUpFileType(mtype);
 
             try
             {
                 // return cached copy, if you can
                 if (ch.CachedResourceIsValid((HTTPResource)this))
                     return;
-
-                arg_list = util.ParseUrlPattern(absoluteUri, this.UrlPattern);
-                util.SafeAdd(ref arg_list, "_title", this.Title);
-                util.SafeAdd(ref arg_list, "_last-modified", string.Format("{0:s}Z", DateTime.UtcNow));
-                util.SafeAdd(ref arg_list, "_media-type", mtype);
-                if (shared_args != null)
-                {
-                    foreach (string key in shared_args.Keys)
-                    {
-                        util.SafeAdd(ref arg_list, key, shared_args[key].ToString());
-                    }
-                }
 
                 // get the document or make one
                 if (this.TemplateXml != string.Empty)
@@ -110,7 +81,7 @@ namespace Exyus.Web
                     {
                         file = Context.Server.MapPath(util.GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_templatefolder) + this.TemplateXml);
                     }
-                    file = file.Replace("{ftype}",ftype);
+                    file = file.Replace("{ftype}", CurrentFileType);
 
                     url = this.Context.Request.Url.ToString();
                     xmlout = xfr.GetXmlFile(file, url);
@@ -135,27 +106,26 @@ namespace Exyus.Web
                     {
                         file = this.Context.Server.MapPath(util.GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_templatefolder) + this.TemplateXsl);
                     }
-                    file = file.Replace("{ftype}", ftype);
+                    file = file.Replace("{ftype}", CurrentFileType);
 
                     XslTransformer xslt = new XslTransformer();
-                    out_text = xslt.ExecuteText(xmlout, file,arg_list);
+                    out_text = xslt.ExecuteText(xmlout, file, ArgumentList);
                 }
 
                 // handle caching of this resource
-                ch.CacheResource((HTTPResource)this, out_text);
+                ch.CacheResource((HTTPResource)this, util.FixEncoding(out_text));
             }
             catch (HttpException hex)
             {
                 this.StatusCode = (HttpStatusCode)hex.GetHttpCode();
                 this.StatusDescription = hex.GetHtmlErrorMessage();
-                out_text = util.RenderError("http error", hex.GetHtmlErrorMessage(), mtype);
-                //xmlout.LoadXml(string.Format(Constants.fmt_xml_error_inc, hex.Message, this.Context.Request.Url, file));
+                out_text = util.RenderError("http error", hex.GetHtmlErrorMessage(), CurrentMediaType);
             }
             catch (Exception ex)
             {
                 this.StatusCode = HttpStatusCode.InternalServerError;
                 this.StatusDescription = ex.Message;
-                out_text = util.RenderError("unknown error", ex.Message, mtype);
+                out_text = util.RenderError("unknown error", ex.Message, CurrentMediaType);
             }
 
             // return the results
