@@ -1,5 +1,5 @@
 /*
- * NOTICE: not working yet
+ * NOTICE: deprecated
  */
 using System;
 using System.Web;
@@ -23,7 +23,6 @@ namespace Exyus.Web
         private string rex_notfound = "not found";
 
         public string ConnectionString = string.Empty;
-        public string UrlPattern = string.Empty;
         public string PostLocationUri = string.Empty;
         public string DocumentsFolder = string.Empty;
         public string[] XHtmlNodes = null;
@@ -34,10 +33,6 @@ namespace Exyus.Web
         public SqlXmlResource()
         {
             this.ContentType = Constants.cType_Xml;
-
-            //get first pattern (if none set already)
-            if (this.UrlPattern == null || this.UrlPattern == string.Empty)
-                this.UrlPattern = ((UriPattern)this.GetType().GetCustomAttributes(typeof(UriPattern), false)[0]).Patterns[0];
         }
         public override void Delete()
         {
@@ -124,11 +119,6 @@ namespace Exyus.Web
 
             string XslFile = this.Context.Server.MapPath(this.DocumentsFolder + "get.xsl");
             string XsdFile = this.Context.Server.MapPath(this.DocumentsFolder + "get.xsd");
-
-            // determine mediatype for this request
-            // and adjust for response, if need
-            string mtype = util.SetMediaType(this);
-            string ftype = util.LookUpFileType(mtype);
 
             try
             {

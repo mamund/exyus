@@ -9,9 +9,7 @@ namespace Exyus.Web
     {
         Utility util = new Utility();
         Caching.Cache ch = new Exyus.Caching.Cache();
-        private string[] mediaTypes = null;
         public System.Collections.SortedList Files = new System.Collections.SortedList();
-        public string Title = "Source Documents";
         public bool ShowList = true;
         public string CSSUrl = string.Empty;
         public string CSSContent = string.Empty;
@@ -20,26 +18,18 @@ namespace Exyus.Web
         public PlainTextViewer()
         {
             this.ContentType = "text/plain";
-            mediaTypes = ((MediaTypes)this.GetType().GetCustomAttributes(typeof(MediaTypes), false)[0]).Types;
         }
 
         public override void Get()
         {
-            // validate media type (may throw 416 error)
-            util.SetMediaType(this, mediaTypes);
-
             // handle args
             string f = (this.Context.Request["f"] != null ? this.Context.Request["f"] : string.Empty);
-
-            //if (f == string.Empty)
-            //    throw new HttpException(400, "Missing argument [f]");
 
             // check cache first
             if (ch.CachedResourceIsValid((HTTPResource)this))
             {
                 return;
             }
-
 
             // make sure it's a valid item
             if (f!=string.Empty && !Files.ContainsKey(f))
@@ -107,7 +97,6 @@ namespace Exyus.Web
             }
             
             // cache and return
-
             ch.CacheResource((HTTPResource)this, results);
             this.Response = results;
         }

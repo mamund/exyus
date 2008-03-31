@@ -42,10 +42,6 @@ namespace Exyus.Web
             XmlDocument xmlout = new XmlDocument();
             string out_text = string.Empty;
 
-            // settle content negotitation
-            string mtype = util.SetMediaType(this);
-            string ftype = util.LookUpFileType(mtype);
-
             try
             {
                 // return cached copy, if you can
@@ -71,13 +67,13 @@ namespace Exyus.Web
             {
                 this.StatusCode = (HttpStatusCode)hex.GetHttpCode();
                 this.StatusDescription = hex.Message;
-                out_text = util.RenderError("unknown error", hex.Message, mtype);
+                out_text = util.RenderError("unknown error", hex.Message, CurrentMediaType);
             }
             catch (Exception ex)
             {
                 this.StatusCode = HttpStatusCode.InternalServerError;
                 this.StatusDescription = ex.Message;
-                out_text = util.RenderError("unknown error", ex.Message, mtype);
+                out_text = util.RenderError("unknown error", ex.Message, CurrentMediaType);
             }
 
             // return the results

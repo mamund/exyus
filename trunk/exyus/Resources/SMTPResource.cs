@@ -20,19 +20,14 @@ namespace Exyus.Web
         // public properties        
         public string FileExtension = ".xml";
         public string PostLocationUri = string.Empty;
-        public string UrlPattern = string.Empty;
         public string DocumentsFolder = string.Empty;
         public string[] XHtmlNodes = null;
-        public string[] UpdateMediaTypes = null;
-        public string Title = string.Empty;
         public bool RedirectOnPost = false;
         public string SMTPHost = string.Empty;
 
         // internal vars
-        private string[] mediaTypes = null;
         private Utility util = new Utility();
         private string s_ext = string.Empty;
-        private string absoluteUri = string.Empty;
         Cache ch = new Cache();
 
         public SMTPResource()
@@ -42,15 +37,6 @@ namespace Exyus.Web
 
             // set system extension
             s_ext = util.GetConfigSectionItem(Constants.cfg_exyusSettings,Constants.cfg_fileExtension, Constants.msc_sys_file_ext);
-
-            //get first pattern (if none set already)
-            if (this.UrlPattern == null || this.UrlPattern == string.Empty)
-                this.UrlPattern = ((UriPattern)this.GetType().GetCustomAttributes(typeof(UriPattern), false)[0]).Patterns[0];
-
-            if (this.Title == string.Empty)
-                this.Title = this.GetType().ToString();
-
-            mediaTypes = ((MediaTypes)this.GetType().GetCustomAttributes(typeof(MediaTypes), false)[0]).Types;
         }
 
         public override void Post()
@@ -58,7 +44,6 @@ namespace Exyus.Web
             XmlDocument xmlout = new XmlDocument();
             XmlDocument xmlin = new XmlDocument();
             XmlDocument xmlargs = new XmlDocument();
-            Hashtable arg_list = new Hashtable();
             string stor_folder = string.Empty;
             string id = string.Empty;
             string xsl_file = string.Empty;
@@ -66,43 +51,22 @@ namespace Exyus.Web
             string original_contentType = this.ContentType;
             string out_text = string.Empty;
 
-            absoluteUri = this.Context.Request.RawUrl;
-
-            // settle on media type for the method
-            string mtype = util.SetMediaType(this,this.UpdateMediaTypes);
-            string ftype = util.LookUpFileType(mtype);
-
             string XslArgs = this.Context.Server.MapPath(this.DocumentsFolder + "args.xsl");
             string XslPostArgs = this.Context.Server.MapPath(this.DocumentsFolder + "post_args.xsl");
             string XsdFile = this.Context.Server.MapPath(this.DocumentsFolder + "post.xsd");
-            string XsdFileMtype = this.Context.Server.MapPath(this.DocumentsFolder + (mtype == string.Empty ? "post.xsd" : string.Format("post_{0}.xsd", ftype)));
+            string XsdFileMtype = this.Context.Server.MapPath(this.DocumentsFolder + (CurrentMediaType == string.Empty ? "post.xsd" : string.Format("post_{0}.xsd", CurrentFileType)));
             string XslPostRequest = this.Context.Server.MapPath(this.DocumentsFolder + "post_request.xsl");
-            string XslPostRequestMtype = this.Context.Server.MapPath(this.DocumentsFolder + (mtype == string.Empty ? "post_request.xsl" : string.Format("post_request_{0}.xsl", ftype)));
+            string XslPostRequestMtype = this.Context.Server.MapPath(this.DocumentsFolder + (CurrentMediaType == string.Empty ? "post_request.xsl" : string.Format("post_request_{0}.xsl", CurrentFileType)));
 
             try
             {
-                // make sure we can do this
-                if (this.AllowPost == false)
-                    throw new HttpException((int)HttpStatusCode.MethodNotAllowed, "Cannot POST this resource.");
-
-                // use regexp pattern to covert url into xml document
-                arg_list = util.ParseUrlPattern(absoluteUri, this.UrlPattern);
-                util.SafeAdd(ref arg_list, "_media-type", mtype);
-                if (shared_args != null)
-                {
-                    foreach (string key in shared_args.Keys)
-                    {
-                        util.SafeAdd(ref arg_list, key, shared_args[key].ToString());
-                    }
-                }
-
                 // validate args
                 xsl_file = (File.Exists(XslPostArgs) ? XslPostArgs : XslArgs);
                 if (File.Exists(xsl_file))
                 {
                     xmlargs.LoadXml("<root />");
                     XslTransformer xslt = new XslTransformer();
-                    id = xslt.ExecuteText(xmlargs, xsl_file, arg_list);
+                    id = xslt.ExecuteText(xmlargs, xsl_file, ArgumentList);
                 }
                 // transform *must not* return doc id!
                 if (id != string.Empty)
@@ -110,7 +74,7 @@ namespace Exyus.Web
                 
                 // get the xmldoc from the entity
                 this.Context.Request.InputStream.Position = 0;
-                switch (mtype.ToLower())
+                switch (CurrentMediaType.ToLower())
                 {
                     case Constants.cType_FormUrlEncoded:
                         xmlin = util.ProcessFormVars(this.Context.Request.Form);
@@ -141,7 +105,7 @@ namespace Exyus.Web
                 if (File.Exists(xsl_file))
                 {
                     XslTransformer xslt = new XslTransformer();
-                    out_text = xslt.ExecuteText(xmlin, xsl_file, arg_list);
+                    out_text = xslt.ExecuteText(xmlin, xsl_file, ArgumentList);
                     xmlout.LoadXml(out_text);
                 }
                 else
@@ -217,11 +181,8 @@ namespace Exyus.Web
 
                 // redirect to created item
                 this.StatusCode = (this.RedirectOnPost?HttpStatusCode.Redirect:HttpStatusCode.Created);
-                this.Location = util.GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_rootfolder) + util.ReplaceArgs(this.PostLocationUri.Replace("{id}",id), arg_list);
+                this.Location = util.GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_rootfolder) + util.ReplaceArgs(this.PostLocationUri.Replace("{id}",id), ArgumentList);
 
-                // if we were using form-posting, reset to preferred content type (text/html, most likely)
-                if (this.ContentType == Constants.cType_FormUrlEncoded)
-                    this.ContentType = original_contentType;
 
                 xmlout = null;
             }
@@ -229,13 +190,19 @@ namespace Exyus.Web
             {
                 this.StatusCode = (HttpStatusCode)hex.GetHttpCode();
                 this.StatusDescription = hex.Message;
-                out_text = util.RenderError("http error", hex.Message, mtype);
+                out_text = util.RenderError("http error", hex.Message, CurrentMediaType);
             }
             catch (Exception ex)
             {
                 this.StatusCode = HttpStatusCode.InternalServerError;
                 this.StatusDescription = ex.Message;
-                out_text = util.RenderError("unknown error", ex.Message, mtype);
+                out_text = util.RenderError("unknown error", ex.Message, CurrentMediaType);
+            }
+
+            // if we were using form-posting, reset to preferred content type (text/html, most likely)
+            if (this.ContentType == Constants.cType_FormUrlEncoded)
+            {
+                this.ContentType = (original_contentType == Constants.cType_FormUrlEncoded ? Constants.cType_Html : original_contentType);
             }
 
             this.Response = out_text;

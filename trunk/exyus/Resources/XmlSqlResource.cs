@@ -19,24 +19,17 @@ namespace Exyus.Web
     {
         // public properties
         public string ConnectionString = string.Empty;
-        public string UrlPattern = string.Empty;
         public string PostLocationUri = string.Empty;
         public string DocumentsFolder = string.Empty;
         public string[] XHtmlNodes = null;
-        public string[] UpdateMediaTypes = null;
-        public string[] ImmediateCacheUri = null;
-        public string[] BackgroundCacheUri = null;
-        public string Title = string.Empty;
         public bool RedirectOnPost = false;
         public bool RedirectOnPut = false;
         public string PostIdXPath = "//@id";
 
         // internal vars
-        private string[] mediaTypes = null;
         private Utility util = new Utility();
         private string rex_sqex = "Description=\"(.*)\"";
         private string rex_notfound = "not found";
-        private string absoluteUri = string.Empty;
         private Cache ch = new Cache();
 
         public XmlSqlResource()
@@ -45,67 +38,35 @@ namespace Exyus.Web
             {
                 this.ContentType = Constants.cType_Xml;
             }
-
-            //get first pattern (if none set already)
-            if (this.UrlPattern == null || this.UrlPattern == string.Empty)
-                this.UrlPattern = ((UriPattern)this.GetType().GetCustomAttributes(typeof(UriPattern), false)[0]).Patterns[0];
-
-            if (this.Title == string.Empty)
-                this.Title = this.GetType().ToString();
-
-            mediaTypes = ((MediaTypes)this.GetType().GetCustomAttributes(typeof(MediaTypes), false)[0]).Types;
         }
 
         public override void Delete()
         {
             XmlDocument xmlout = new XmlDocument();
             XmlDocument xmlin = new XmlDocument();
-            Hashtable arg_list = new Hashtable();
             string out_text = string.Empty;
             string xsd_file = string.Empty;
             string xsl_file = string.Empty;
-
-            // determine mediatype for this request
-            // and adjust for response, if need
-            string mtype = util.SetMediaType(this, mediaTypes);
-            string ftype = util.LookUpFileType(mtype);
-
-            absoluteUri = this.Context.Request.RawUrl;
-
-            // make sure we can do this
-            if (this.AllowDelete == false)
-                throw new HttpException((int)HttpStatusCode.MethodNotAllowed, "Cannot DELETE this resource.");
 
             string XslArgs = this.Context.Server.MapPath(this.DocumentsFolder + "args.xsl");
             string XslDeleteArgs = this.Context.Server.MapPath(this.DocumentsFolder + "delete_args.xsl");
 
             string xslDeleteRequest = this.Context.Server.MapPath(this.DocumentsFolder + "delete_request.xsl");
-            string xslDeleteRequestContentType = this.Context.Server.MapPath(this.DocumentsFolder + (mtype == string.Empty ? "delete_request.xsl" : string.Format("delete_request_{0}.xsl", ftype)));
+            string xslDeleteRequestContentType = this.Context.Server.MapPath(this.DocumentsFolder + (CurrentMediaType == string.Empty ? "delete_request.xsl" : string.Format("delete_request_{0}.xsl", CurrentFileType)));
 
             string XsdFile = this.Context.Server.MapPath(this.DocumentsFolder + "delete.xsd");
-            string XsdFileMtype = this.Context.Server.MapPath(this.DocumentsFolder + (mtype == string.Empty ? "delete.xsd" : string.Format("delete_{0}.xsd", ftype)));
+            string XsdFileMtype = this.Context.Server.MapPath(this.DocumentsFolder + (CurrentMediaType == string.Empty ? "delete.xsd" : string.Format("delete_{0}.xsd", CurrentFileType)));
 
 
             try
             {
-                // use regexp pattern to covert url into collection
-                arg_list = util.ParseUrlPattern(absoluteUri, this.UrlPattern);
-                util.SafeAdd(ref arg_list, "_media-type", mtype);
-                if (shared_args != null)
-                {
-                    foreach (string key in shared_args.Keys)
-                    {
-                        util.SafeAdd(ref arg_list, key, shared_args[key].ToString());
-                    }
-                }
-
                 // transform arglist into xml document
                 xsl_file = string.Empty;
                 xsl_file = (File.Exists(XslDeleteArgs) ? XslDeleteArgs : XslArgs);
                 if (File.Exists(xsl_file))
                 {
                     XslTransformer xslt = new XslTransformer();
-                    out_text = xslt.ExecuteText(xmlin, xsl_file, arg_list);
+                    out_text = xslt.ExecuteText(xmlin, xsl_file, ArgumentList);
 
                     if (out_text == string.Empty)
                         throw new HttpException(400, "bad request");
@@ -136,7 +97,7 @@ namespace Exyus.Web
                 if (File.Exists(xsl_file))
                 {
                     XslTransformer xslt = new XslTransformer();
-                    string cmdtext = xslt.ExecuteText(xmlin, xsl_file,arg_list);
+                    string cmdtext = xslt.ExecuteText(xmlin, xsl_file, ArgumentList);
 
                     // execute sql and return empty
                     SqlXmlCommand cmd = new SqlXmlCommand(util.GetConfigSectionItem(Constants.cfg_exyusSettings, this.ConnectionString));
@@ -145,7 +106,7 @@ namespace Exyus.Web
                     this.StatusCode = HttpStatusCode.NoContent;
 
                     // cache invalidation
-                    ch.ClearCache(this.ImmediateCacheUriTemplates, this.BackgroundCacheUriTemplates, "", arg_list, util.LoadUriCache());
+                    ch.ClearCache(this.ImmediateCacheUriTemplates, this.BackgroundCacheUriTemplates, "", ArgumentList, util.LoadUriCache());
 
                 }
                 else
@@ -153,14 +114,13 @@ namespace Exyus.Web
                     throw new HttpException(500, "missing transform");
                 }
 
-
                 xmlout = null;
             }
             catch (HttpException hex)
             {
                 this.StatusCode = (HttpStatusCode)hex.GetHttpCode();
                 this.StatusDescription = hex.Message;
-                out_text = util.RenderError("http error", hex.Message, mtype);
+                out_text = util.RenderError("http error", hex.Message, CurrentMediaType);
             }
             catch (SqlXmlException sqex)
             {
@@ -181,18 +141,18 @@ namespace Exyus.Web
                     this.StatusCode = HttpStatusCode.BadRequest;
                     this.StatusDescription = msg;
                 }
-                out_text = util.RenderError("db error", msg, mtype);
+                out_text = util.RenderError("db error", msg, CurrentMediaType);
             }
             catch (Exception ex)
             {
                 this.StatusCode = HttpStatusCode.InternalServerError;
                 this.StatusDescription = ex.Message;
-                out_text = util.RenderError("unknown error", ex.Message, mtype);
+                out_text = util.RenderError("unknown error", ex.Message, CurrentMediaType);
             }
 
-            if (mtype == Constants.cType_FormUrlEncoded)
+            if (CurrentMediaType == Constants.cType_FormUrlEncoded)
             {
-                mtype = Constants.cType_Html;
+                CurrentMediaType = Constants.cType_Html;
             }
             this.Response = out_text;
 
@@ -211,50 +171,27 @@ namespace Exyus.Web
             XmlDocument xmlout = new XmlDocument();
             XmlDocument xmlin = new XmlDocument();
             XslTransformer xslt = new XslTransformer();
-            Hashtable arg_list = new Hashtable();
             string xsd_file = string.Empty;
             string xsl_file = string.Empty;
-
-            absoluteUri = this.Context.Request.RawUrl;
             string out_text = string.Empty;
-
-            // determine mediatype for this request
-            // and adjust for response, if need
-            string mtype = util.SetMediaType(this);
-            string ftype = util.LookUpFileType(mtype);
 
             // possible control documents
             string XslArgs = this.Context.Server.MapPath(this.DocumentsFolder + "args.xsl");
             string XslGetArgs = this.Context.Server.MapPath(this.DocumentsFolder + "get_args.xsl");
 
             string xslGetRequest = this.Context.Server.MapPath(this.DocumentsFolder + "get_request.xsl");
-            string xslGetRequestContentType = this.Context.Server.MapPath(this.DocumentsFolder + (mtype == string.Empty ? "get_request.xsl" : string.Format("get_request_{0}.xsl", ftype)));
+            string xslGetRequestContentType = this.Context.Server.MapPath(this.DocumentsFolder + (CurrentMediaType == string.Empty ? "get_request.xsl" : string.Format("get_request_{0}.xsl", CurrentFileType)));
 
             string xslGetResponse = this.Context.Server.MapPath(this.DocumentsFolder + "get_response.xsl");
-            string xslGetResponseContentType = this.Context.Server.MapPath(this.DocumentsFolder + (mtype == string.Empty ? "get_response.xsl" : string.Format("get_response_{0}.xsl", ftype)));
+            string xslGetResponseContentType = this.Context.Server.MapPath(this.DocumentsFolder + (CurrentMediaType == string.Empty ? "get_response.xsl" : string.Format("get_response_{0}.xsl", CurrentFileType)));
 
             string XsdFile = this.Context.Server.MapPath(this.DocumentsFolder + "get.xsd");
-            string XsdFileMtype = this.Context.Server.MapPath(this.DocumentsFolder + (mtype == string.Empty ? "get.xsd" : string.Format("get_{0}.xsd", ftype)));
+            string XsdFileMtype = this.Context.Server.MapPath(this.DocumentsFolder + (CurrentMediaType == string.Empty ? "get.xsd" : string.Format("get_{0}.xsd", CurrentFileType)));
 
             try
             {
                 if (ch.CachedResourceIsValid((HTTPResource)this))
                     return;
-
-                // ok, let's try to build a new one
-
-                // use regexp pattern to covert url into xml document
-                arg_list = util.ParseUrlPattern(absoluteUri, this.UrlPattern);
-                util.SafeAdd(ref arg_list, "_title", this.Title);
-                util.SafeAdd(ref arg_list, "_last-modified", string.Format("{0:s}Z", DateTime.UtcNow));
-                util.SafeAdd(ref arg_list, "_media-type", mtype);
-                if (shared_args != null)
-                {
-                    foreach (string key in shared_args.Keys)
-                    {
-                        util.SafeAdd(ref arg_list, key, shared_args[key].ToString());
-                    }
-                }
 
                 // transform into proper argument list
                 xsl_file = string.Empty;
@@ -262,7 +199,7 @@ namespace Exyus.Web
                 if (File.Exists(xsl_file))
                 {
                     xslt = new XslTransformer();
-                    out_text = xslt.ExecuteText(xmlin, xsl_file, arg_list);
+                    out_text = xslt.ExecuteText(xmlin, xsl_file, ArgumentList);
                     xmlin.LoadXml(out_text);
                 }
                 else
@@ -286,7 +223,7 @@ namespace Exyus.Web
                 if (File.Exists(xsl_file))
                 {
                     xslt = new XslTransformer();
-                    string cmdtext = xslt.ExecuteText(xmlin, xsl_file,arg_list);
+                    string cmdtext = xslt.ExecuteText(xmlin, xsl_file, ArgumentList);
 
                     // execute sql and return results
                     SqlXmlCommand cmd = new SqlXmlCommand(util.GetConfigSectionItem(Constants.cfg_exyusSettings, this.ConnectionString));
@@ -303,7 +240,7 @@ namespace Exyus.Web
                     if (File.Exists(xsl_file))
                     {
                         xslt = new XslTransformer();
-                        out_text = xslt.ExecuteText(xmlout, xsl_file, arg_list);
+                        out_text = xslt.ExecuteText(xmlout, xsl_file, ArgumentList);
                     }
                     else
                     {
@@ -320,7 +257,7 @@ namespace Exyus.Web
             {
                 this.StatusCode = (HttpStatusCode)hex.GetHttpCode();
                 this.StatusDescription = hex.Message;
-                out_text = util.RenderError("http error", hex.Message, mtype);
+                out_text = util.RenderError("http error", hex.Message, CurrentMediaType);
             }
             catch (SqlXmlException sqex)
             {
@@ -341,13 +278,13 @@ namespace Exyus.Web
                     this.StatusCode = HttpStatusCode.BadRequest;
                     this.StatusDescription = msg;
                 }
-                out_text = util.RenderError("db error", msg, mtype);
+                out_text = util.RenderError("db error", msg, CurrentMediaType);
             }
             catch (Exception ex)
             {
                 this.StatusCode = HttpStatusCode.InternalServerError;
                 this.StatusDescription = ex.Message;
-                out_text = util.RenderError("unknown error", ex.Message, mtype);
+                out_text = util.RenderError("unknown error", ex.Message, CurrentMediaType);
             }
 
             // return the results
@@ -363,52 +300,27 @@ namespace Exyus.Web
             XmlDocument xmlin = new XmlDocument();
             XmlDocument xmlargs = new XmlDocument();
             XslTransformer xslt = new XslTransformer();
-            Hashtable arg_list = new Hashtable();
             string xsl_file = string.Empty;
             string xsd_file = string.Empty;
             string id = string.Empty;
             string original_contentType = this.ContentType;
-
-            absoluteUri = this.Context.Request.RawUrl;
             string out_text = string.Empty;
-
-            // make sure we can do this
-            if (this.AllowPost == false)
-                throw new HttpException((int)HttpStatusCode.MethodNotAllowed, "Cannot POST this resource.");
-
-            // determine mediatype for this request
-            // and adjust for response, if need
-            string mtype = util.SetMediaType(this,this.UpdateMediaTypes);
-            string ftype = util.LookUpFileType(mtype);
 
             // possible control documents
             string XslArgs = this.Context.Server.MapPath(this.DocumentsFolder + "args.xsl");
             string XslGetArgs = this.Context.Server.MapPath(this.DocumentsFolder + "post_args.xsl");
 
             string xslGetRequest = this.Context.Server.MapPath(this.DocumentsFolder + "post_request.xsl");
-            string xslGetRequestContentType = this.Context.Server.MapPath(this.DocumentsFolder + (mtype == string.Empty ? "post_request.xsl" : string.Format("post_request_{0}.xsl", ftype)));
+            string xslGetRequestContentType = this.Context.Server.MapPath(this.DocumentsFolder + (CurrentMediaType == string.Empty ? "post_request.xsl" : string.Format("post_request_{0}.xsl", CurrentFileType)));
 
             string xslGetResponse = this.Context.Server.MapPath(this.DocumentsFolder + "post_response.xsl");
-            string xslGetResponseContentType = this.Context.Server.MapPath(this.DocumentsFolder + (mtype == string.Empty ? "post_response.xsl" : string.Format("post_response_{0}.xsl", ftype)));
+            string xslGetResponseContentType = this.Context.Server.MapPath(this.DocumentsFolder + (CurrentMediaType == string.Empty ? "post_response.xsl" : string.Format("post_response_{0}.xsl", CurrentFileType)));
 
             string XsdFile = this.Context.Server.MapPath(this.DocumentsFolder + "post.xsd");
-            string XsdFileMtype = this.Context.Server.MapPath(this.DocumentsFolder + (mtype == string.Empty ? "post.xsd" : string.Format("post_{0}.xsd", ftype)));
+            string XsdFileMtype = this.Context.Server.MapPath(this.DocumentsFolder + (CurrentMediaType == string.Empty ? "post.xsd" : string.Format("post_{0}.xsd", CurrentFileType)));
 
             try
             {
-                // use regexp pattern to covert url into xml document
-                arg_list = util.ParseUrlPattern(absoluteUri, this.UrlPattern);
-                util.SafeAdd(ref arg_list, "_title", this.Title);
-                util.SafeAdd(ref arg_list, "_last-modified", string.Format("{0:s}Z", DateTime.UtcNow));
-                util.SafeAdd(ref arg_list, "_media-type", mtype);
-                if (shared_args != null)
-                {
-                    foreach (string key in shared_args.Keys)
-                    {
-                        util.SafeAdd(ref arg_list, key, shared_args[key].ToString());
-                    }
-                }
-
                 // since GET has no body, build 'stub xmldocument'
                 xmlin.LoadXml("<root />");
 
@@ -418,13 +330,13 @@ namespace Exyus.Web
                 if (File.Exists(xsl_file))
                 {
                     xslt = new XslTransformer();
-                    out_text = xslt.ExecuteText(xmlin, xsl_file, arg_list);
+                    out_text = xslt.ExecuteText(xmlin, xsl_file, ArgumentList);
                     xmlargs.LoadXml(out_text);
                 }
 
                 // get the xmldoc from the entity
                 this.Context.Request.InputStream.Position = 0;
-                switch (mtype.ToLower())
+                switch (CurrentMediaType.ToLower())
                 {
                     case Constants.cType_FormUrlEncoded:
                         xmlin = util.ProcessFormVars(this.Context.Request.Form);
@@ -457,7 +369,7 @@ namespace Exyus.Web
                 if (File.Exists(xsl_file))
                 {
                     xslt = new XslTransformer();
-                    string cmdtext = xslt.ExecuteText(xmlin, xsl_file, arg_list);
+                    string cmdtext = xslt.ExecuteText(xmlin, xsl_file, ArgumentList);
 
                     // execute sql and return results
                     SqlXmlCommand cmd = new SqlXmlCommand(util.GetConfigSectionItem(Constants.cfg_exyusSettings, ConnectionString));
@@ -470,7 +382,7 @@ namespace Exyus.Web
                     }
 
                     // udpate arg list with new id
-                    util.SafeAdd(ref arg_list,"id",xmlout.SelectSingleNode(this.PostIdXPath).InnerText);
+                    util.SafeAdd(ref ArgumentList, "id", xmlout.SelectSingleNode(this.PostIdXPath).InnerText);
 
                     // transform outputs into representation
                     xsl_file = string.Empty;
@@ -478,7 +390,7 @@ namespace Exyus.Web
                     if (File.Exists(xsl_file))
                     {
                         xslt = new XslTransformer();
-                        out_text = xslt.ExecuteText(xmlout, xsl_file, arg_list);
+                        out_text = xslt.ExecuteText(xmlout, xsl_file, ArgumentList);
                     }
                     else
                     {
@@ -487,16 +399,10 @@ namespace Exyus.Web
 
                     // check for redirect to created item
                     this.StatusCode = (this.RedirectOnPost ? HttpStatusCode.Redirect : HttpStatusCode.Created);
-                    this.Location = util.ReplaceArgs(util.GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_rootfolder) + this.PostLocationUri, arg_list);
-
-                    // if we were using form-posting, reset to preferred content type (text/html, most likely)
-                    if (this.ContentType == Constants.cType_FormUrlEncoded)
-                    {
-                        this.ContentType = original_contentType;
-                    }
+                    this.Location = util.ReplaceArgs(util.GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_rootfolder) + this.PostLocationUri, ArgumentList);
 
                     // cache invalidation
-                    ch.ClearCache(this.ImmediateCacheUriTemplates, this.BackgroundCacheUriTemplates, "", arg_list, util.LoadUriCache());
+                    ch.ClearCache(this.ImmediateCacheUriTemplates, this.BackgroundCacheUriTemplates, "", ArgumentList, util.LoadUriCache());
                 }
                 else
                 {
@@ -507,7 +413,7 @@ namespace Exyus.Web
             {
                 this.StatusCode = (HttpStatusCode)hex.GetHttpCode();
                 this.StatusDescription = hex.Message;
-                out_text = util.RenderError("http error", hex.Message, mtype);
+                out_text = util.RenderError("http error", hex.Message, CurrentMediaType);
             }
             catch (SqlXmlException sqex)
             {
@@ -528,19 +434,19 @@ namespace Exyus.Web
                     this.StatusCode = HttpStatusCode.BadRequest;
                     this.StatusDescription = msg;
                 }
-                out_text = util.RenderError("db error", msg, mtype);
+                out_text = util.RenderError("db error", msg, CurrentMediaType);
             }
             catch (Exception ex)
             {
                 this.StatusCode = HttpStatusCode.InternalServerError;
                 this.StatusDescription = ex.Message;
-                out_text = util.RenderError("unknown error", ex.Message, mtype);
+                out_text = util.RenderError("unknown error", ex.Message, CurrentMediaType);
             }
 
             // if we were using form-posting, reset to preferred content type (text/html, most likely)
             if (this.ContentType == Constants.cType_FormUrlEncoded)
             {
-                this.ContentType = original_contentType;
+                this.ContentType = (original_contentType == Constants.cType_FormUrlEncoded ? Constants.cType_Html : original_contentType);
             }
             this.Response = out_text;
 
@@ -554,17 +460,10 @@ namespace Exyus.Web
             XmlDocument xmlin = new XmlDocument();
             XmlDocument xmlargs = new XmlDocument();
             XslTransformer xslt = new XslTransformer();
-            Hashtable arg_list = new Hashtable();
             string out_text = string.Empty;
             string xsl_file = string.Empty;
             string xsd_file = string.Empty;
             string original_contentType = this.ContentType;
-
-            absoluteUri = this.Context.Request.RawUrl;
-
-            // settle on media type for the method
-            string mtype = util.SetMediaType(this, this.UpdateMediaTypes);
-            string ftype = util.LookUpFileType(mtype);
 
             // possible control documents
             string XslArgs = this.Context.Server.MapPath(this.DocumentsFolder + "args.xsl");
@@ -574,37 +473,25 @@ namespace Exyus.Web
             string XsdPutArgs = this.Context.Server.MapPath(this.DocumentsFolder + "put_args.xsd");
 
             string xslPutRequest = this.Context.Server.MapPath(this.DocumentsFolder + "put_request.xsl");
-            string xslPutRequestContentType = this.Context.Server.MapPath(this.DocumentsFolder + (mtype == string.Empty ? "put_request.xsl" : string.Format("put_request_{0}.xsl", ftype)));
+            string xslPutRequestContentType = this.Context.Server.MapPath(this.DocumentsFolder + (CurrentMediaType == string.Empty ? "put_request.xsl" : string.Format("put_request_{0}.xsl", CurrentFileType)));
 
             string xslPutResponse = this.Context.Server.MapPath(this.DocumentsFolder + "put_response.xsl");
-            string xslPutResponseContentType = this.Context.Server.MapPath(this.DocumentsFolder + (mtype == string.Empty ? "put_response.xsl" : string.Format("put_response_{0}.xsl", ftype)));
+            string xslPutResponseContentType = this.Context.Server.MapPath(this.DocumentsFolder + (CurrentMediaType == string.Empty ? "put_response.xsl" : string.Format("put_response_{0}.xsl", CurrentFileType)));
 
             string XsdFile = this.Context.Server.MapPath(this.DocumentsFolder + "put.xsd");
-            string XsdFileMtype = this.Context.Server.MapPath(this.DocumentsFolder + (mtype == string.Empty ? "put.xsd" : string.Format("put_{0}.xsd", ftype)));
+            string XsdFileMtype = this.Context.Server.MapPath(this.DocumentsFolder + (CurrentMediaType == string.Empty ? "put.xsd" : string.Format("put_{0}.xsd", CurrentFileType)));
 
             try
             {
-                // use regexp pattern to covert url into xml document
-                arg_list = util.ParseUrlPattern(absoluteUri, this.UrlPattern);
-                util.SafeAdd(ref arg_list, "_title", this.Title);
-                util.SafeAdd(ref arg_list, "_last-modified", string.Format("{0:s}Z", DateTime.UtcNow));
-                util.SafeAdd(ref arg_list, "_media-type", mtype);
-                if (shared_args != null)
-                {
-                    foreach (string key in shared_args.Keys)
-                    {
-                        util.SafeAdd(ref arg_list, key, shared_args[key].ToString());
-                    }
-                }
-
                 // transform into proper argument list
                 xmlargs.LoadXml("<root />");
+
                 xsl_file = string.Empty;
                 xsl_file = (File.Exists(XslPutArgs) ? XslPutArgs : XslArgs);
                 if (File.Exists(xsl_file))
                 {
                     xslt = new XslTransformer();
-                    out_text = xslt.ExecuteText(xmlargs, xsl_file, arg_list);
+                    out_text = xslt.ExecuteText(xmlargs, xsl_file, ArgumentList);
                     xmlargs.LoadXml(out_text);
                 }
 
@@ -621,7 +508,7 @@ namespace Exyus.Web
 
                 // get the xmldoc from the entity
                 this.Context.Request.InputStream.Position = 0;
-                switch (mtype.ToLower())
+                switch (CurrentMediaType.ToLower())
                 {
                     case Constants.cType_FormUrlEncoded:
                         xmlin = util.ProcessFormVars(this.Context.Request.Form);
@@ -675,7 +562,7 @@ namespace Exyus.Web
                             this.Context.Request.Url.Scheme,
                             this.Context.Request.Url.DnsSafeHost,
                             this.Context.Request.RawUrl),
-                            "head", (mtype==Constants.cType_FormUrlEncoded?"text/html":mtype));
+                            "head", (CurrentMediaType==Constants.cType_FormUrlEncoded?"text/html":CurrentMediaType));
 
                     // record exists, this must be an update
                     etag = util.GetHttpHeader(Constants.hdr_etag, (NameValueCollection)cl.ResponseHeaders);
@@ -716,7 +603,7 @@ namespace Exyus.Web
                     if (File.Exists(xsl_file))
                     {
                         xslt = new XslTransformer();
-                        string cmdtext = xslt.ExecuteText(xmlin, xsl_file, arg_list);
+                        string cmdtext = xslt.ExecuteText(xmlin, xsl_file, ArgumentList);
 
                         // execute sql and return results
                         SqlXmlCommand cmd = new SqlXmlCommand(util.GetConfigSectionItem(Constants.cfg_exyusSettings, this.ConnectionString));
@@ -734,7 +621,7 @@ namespace Exyus.Web
                         if (File.Exists(xsl_file))
                         {
                             xslt = new XslTransformer();
-                            out_text = xslt.ExecuteText(xmlout, xsl_file, arg_list);
+                            out_text = xslt.ExecuteText(xmlout, xsl_file, ArgumentList);
                         }
                         else
                         {
@@ -742,7 +629,7 @@ namespace Exyus.Web
                         }
 
                         // cache invalidation
-                        ch.ClearCache(this.ImmediateCacheUriTemplates, this.BackgroundCacheUriTemplates, "", arg_list, util.LoadUriCache());
+                        ch.ClearCache(this.ImmediateCacheUriTemplates, this.BackgroundCacheUriTemplates, "", ArgumentList, util.LoadUriCache());
                     }
                     else
                     {
@@ -758,7 +645,7 @@ namespace Exyus.Web
             {
                 this.StatusCode = (HttpStatusCode)hex.GetHttpCode();
                 this.StatusDescription = hex.Message;
-                out_text = util.RenderError("http error", hex.Message, mtype);
+                out_text = util.RenderError("http error", hex.Message, CurrentMediaType);
             }
             catch (SqlXmlException sqex)
             {
@@ -779,13 +666,13 @@ namespace Exyus.Web
                     this.StatusCode = HttpStatusCode.BadRequest;
                     this.StatusDescription = msg;
                 }
-                out_text = util.RenderError("db error", msg, mtype);
+                out_text = util.RenderError("db error", msg, CurrentMediaType);
             }
             catch (Exception ex)
             {
                 this.StatusCode = HttpStatusCode.InternalServerError;
                 this.StatusDescription = ex.Message;
-                out_text = util.RenderError("unknown error", ex.Message, mtype);
+                out_text = util.RenderError("unknown error", ex.Message, CurrentMediaType);
             }
             this.Response = out_text;
 
