@@ -49,8 +49,6 @@ namespace Exyus.Samples
     class UGDataUpdate : HTTPResource
     {
         Utility util = new Utility();
-        private string[] mediaTypes = null;
-        private string UrlPattern;
 
         public UGDataUpdate()
         {
@@ -60,32 +58,22 @@ namespace Exyus.Samples
             if (this.UrlPattern == null || this.UrlPattern == string.Empty)
             {
                 this.UrlPattern = util.GetDefaultUriPattern(this);
-            }
-
-            // copy media types to make things easier
-            mediaTypes = util.GetMediaTypes(this);
-            
+            }            
         }
 
         public override void Get()
         {
-            Hashtable arg_list = util.ParseUrlPattern(this.Context.Request.RawUrl, this.UrlPattern);
-            if (!arg_list.Contains("id"))
+            if (!ArgumentList.Contains("id"))
             {
                 throw new HttpException(400, "Missing document id");
             }
-            string id = arg_list["id"].ToString();
+            string id = ArgumentList["id"].ToString();
             this.Context.Response.Redirect("/xcs/ugdata/" + id);
         }
 
         public override void Post()
         {
-            // validate media type
-            string mtype = util.SetMediaType(this, mediaTypes);
-
-            // validate argument
-            Hashtable arg_list = util.ParseUrlPattern(this.Context.Request.RawUrl, this.UrlPattern);
-            if (!arg_list.Contains("id"))
+            if (!ArgumentList.Contains("id"))
             {
                 throw new HttpException(400, "Missing document id");
             }
@@ -103,7 +91,7 @@ namespace Exyus.Samples
                     this.Context.Request.Url.Scheme,
                     this.Context.Request.Url.DnsSafeHost,
                     "/xcs/ugdata/",
-                    arg_list["id"]);
+                    ArgumentList["id"]);
 
             // build up execution client w/ credentials
             HTTPClient c = new HTTPClient();
@@ -129,8 +117,6 @@ namespace Exyus.Samples
     class UGDataDelete : HTTPResource
     {
         Utility util = new Utility();
-        private string[] mediaTypes = null;
-        private string UrlPattern;
 
         public UGDataDelete()
         {
@@ -141,31 +127,21 @@ namespace Exyus.Samples
             {
                 this.UrlPattern = util.GetDefaultUriPattern(this);
             }
-
-            // copy media types to make things easier
-            mediaTypes = util.GetMediaTypes(this);
-
         }
 
         public override void Get()
         {
-            Hashtable arg_list = util.ParseUrlPattern(this.Context.Request.RawUrl, this.UrlPattern);
-            if (!arg_list.Contains("id"))
+            if (!ArgumentList.Contains("id"))
             {
                 throw new HttpException(400, "Missing document id");
             }
-            string id = arg_list["id"].ToString();
+            string id = ArgumentList["id"].ToString();
             this.Context.Response.Redirect("/xcs/ugdata/"+id);
         }
 
         public override void Post()
         {
-            // validate content type
-            string mtype = util.SetMediaType(this, mediaTypes);
-
-            // validate arg
-            Hashtable arg_list = util.ParseUrlPattern(this.Context.Request.RawUrl, this.UrlPattern);
-            if (!arg_list.Contains("id"))
+            if (!ArgumentList.Contains("id"))
             {
                 throw new HttpException(400, "Missing document id");
             }
@@ -183,7 +159,7 @@ namespace Exyus.Samples
                     this.Context.Request.Url.Scheme,
                     this.Context.Request.Url.DnsSafeHost,
                     "/xcs/ugdata/",
-                    arg_list["id"]);
+                    ArgumentList["id"]);
 
             // execute DELETE w/ credentials
             HTTPClient c = new HTTPClient();

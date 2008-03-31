@@ -32,20 +32,14 @@ namespace Exyus.Samples
 
         public override void Get()
         {
-            // get computed type (or throw 406)
-            string mtype = util.SetMediaType(this);
-
-            // parse url
-            Hashtable arglist = util.ParseUrlPattern(this.Context.Request.Url.AbsoluteUri, util.GetUriPatterns(this)[0]);
-
             // load list check inputs
             list = LoadZipCodes();
-            string lookup = (arglist["zipid"] != null ? arglist["zipid"].ToString() : string.Empty);
+            string lookup = (ArgumentList["zipid"] != null ? ArgumentList["zipid"].ToString() : string.Empty);
             bool valid = list.Contains(lookup);
             string rtn = (valid == true ? "OK" : "Invalid");
 
             // render requested representation
-            switch (mtype.ToLower())
+            switch (CurrentMediaType.ToLower())
             {
                 case "text/plain":
                     Response = rtn;

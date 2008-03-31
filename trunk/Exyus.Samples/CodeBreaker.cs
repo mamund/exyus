@@ -8,42 +8,40 @@ namespace Exyus.Samples.CodeBreak
     // landing page for the game site
     [UriPattern(@"/codebreaker/\.xcs")]
     [MediaTypes("text/html","text/xml")]
-    class CodeBreaker : XmlPageResource
+    class CodeBreaker : XmlSqlResource
     {
         Utility util = new Utility();
 
         public CodeBreaker()
         {
+            this.AllowPut = false;
+            this.AllowCreateOnPut = false;
+            this.AllowDelete = false;
+            this.AllowPost = false;
             this.ContentType = "text/html";
-            this.TemplateXsl = "~/documents/codebreaker/cb-home_{ftype}.xsl";
-
-            // don't cache this resource!
-            this.LocalMaxAge = 0;
-            this.MaxAge = 0;
-            this.UseValidationCaching = false;
+            this.ConnectionString = "exyus_samples";
+            this.DocumentsFolder = "~/documents/codebreaker/";
+            this.UseValidationCaching = true;
+            this.LocalMaxAge = 600;
         }
 
         public override void Get()
         {
-            string codekey = string.Empty;
-            string codekey_id = "codebreaker-id";
-
-            // get or create cookie)
-            codekey = util.CookieRead(codekey_id);
-            if (codekey == string.Empty)
+            // get or create cookie
+            string uid = util.CookieRead(CBData.CodeKeyID);
+            if (uid == string.Empty)
             {
-                codekey = util.UID();
+                uid = util.UID();
             }
-            util.CookieWrite(codekey_id, codekey, 30, "");
-
-            this.shared_args.Add(codekey_id, codekey);
+            util.CookieWrite(CBData.CodeKeyID, uid, 30, "");
+            this.ArgumentList.Add(CBData.CodeKeyID, uid);
 
             base.Get();
         }
     }
 
-    // temp location in case current user has no cookie id or no games folder
-    [UriPattern(@"/codebreaker/games/\.xcs",@"/codebreaker/(?<uid>[^/]*)/\.xcs")]
+    // temp location in case current user has no cookie id or no user folder
+    [UriPattern(@"/codebreaker/games/\.xcs")]
     [MediaTypes("text/html")]
     class Games : HTTPResource
     {
@@ -58,8 +56,15 @@ namespace Exyus.Samples.CodeBreak
 
         public override void Get()
         {
-            // forward to entry URI
-            this.Context.Response.Redirect(util.GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_rootfolder) + "/codebreaker/");
+            string uid = util.CookieRead(CBData.CodeKeyID);
+            if (uid == string.Empty)
+            {
+                this.Context.Response.Redirect(util.GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_rootfolder) + "/codebreaker/");
+            }
+            else
+            {
+                this.Context.Response.Redirect(util.GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_rootfolder) + string.Format("/codebreaker/{0}/games/", uid));
+            }
         }
     }
 
@@ -72,6 +77,7 @@ namespace Exyus.Samples.CodeBreak
 
         public GameResource()
         {
+            this.AllowPut = false;
             this.AllowCreateOnPut = false;
             this.AllowDelete = false;
             this.RedirectOnPost = true;
@@ -85,6 +91,7 @@ namespace Exyus.Samples.CodeBreak
 
             this.ImmediateCacheUriTemplates = new string[]
                 {
+                    "/codebreaker/",
                     "/codebreaker/{uid}/games/.xcs",
                     "/codebreaker/{uid}/games/{id}.xcs",
                 };
@@ -93,35 +100,42 @@ namespace Exyus.Samples.CodeBreak
         // return either this user's games or the current game
         public override void Get()
         {
-
-            // if no userid, go get one
-            System.Collections.Hashtable arg_list = util.ParseUrlPattern(this.Context.Request.RawUrl, this.UrlPattern);
-            if (!arg_list.Contains("uid"))
+            // no cookie, go to start again
+            string uid = util.CookieRead(CBData.CodeKeyID);
+            if (uid.Length == 0)
             {
                 this.Context.Response.Redirect(util.GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_rootfolder) + "/codebreaker/");
             }
+
+            // if cookie is not the same, go to the proper url
+            if (uid != ArgumentList["uid"].ToString())
+            {
+                this.Context.Response.Redirect(util.GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_rootfolder) + string.Format("/codebreaker/{0}/games/", uid));
+            }
+
+            // otheriwse, just keep going
             base.Get();
         }
 
         // create a new game
         public override void Post()
         {
-            // if no userid, go get one
-            System.Collections.Hashtable arg_list = util.ParseUrlPattern(this.Context.Request.RawUrl, this.UrlPattern);
-            if (!arg_list.Contains("uid"))
+            // no cookie or wrong cookie, throw error
+            string uid = util.CookieRead(CBData.CodeKeyID);
+            if (uid.Length == 0 || uid != ArgumentList["uid"].ToString())
             {
-                this.Context.Response.Redirect(util.GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_rootfolder) + "/codebreaker/");
+                throw new HttpException(403, "access denied");
             }
-
+            
             // get new codeset and set max-attempts
             // add it to the local shared collection
             Answer ans = new Answer();
             ans.GenerateKey();
-            shared_args.Add("place1",ans.place1);
-            shared_args.Add("place2", ans.place2);
-            shared_args.Add("place3", ans.place3);
-            shared_args.Add("place4", ans.place4);
-            shared_args.Add("max-attempts", 10);
+            ArgumentList.Add("place1", ans.place1);
+            ArgumentList.Add("place2", ans.place2);
+            ArgumentList.Add("place3", ans.place3);
+            ArgumentList.Add("place4", ans.place4);
+            ArgumentList.Add("max-attempts", 10);
             
             base.Post();
         }
@@ -150,6 +164,7 @@ namespace Exyus.Samples.CodeBreak
 
             this.ImmediateCacheUriTemplates = new string[]
                 {
+                    "/codebreaker/",
                     "/codebreaker/{uid}/games/.xcs",
                     "/codebreaker/{uid}/games/{gid}.xcs",
                     "/codebreaker/{uid}/games/{gid}/moves/.xcs",
@@ -159,13 +174,18 @@ namespace Exyus.Samples.CodeBreak
 
         // get list of moves for this game or show a single move
         public override void Get()
-        {
-            
-            // if no userid, go get one
-            System.Collections.Hashtable arg_list = util.ParseUrlPattern(this.Context.Request.RawUrl, this.UrlPattern);
-            if (!arg_list.Contains("uid"))
+        {            
+            // no cookie, go to start again
+            string uid = util.CookieRead(CBData.CodeKeyID);
+            if (uid.Length == 0)
             {
                 this.Context.Response.Redirect(util.GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_rootfolder) + "/codebreaker/");
+            }
+
+            // if cookie is not the same, go to the proper url
+            if (uid != ArgumentList["uid"].ToString())
+            {
+                this.Context.Response.Redirect(util.GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_rootfolder) + string.Format("/codebreaker/{0}/games/", uid));
             }
 
             base.Get();
@@ -174,14 +194,45 @@ namespace Exyus.Samples.CodeBreak
         // create a new move for this game
         public override void Post()
         {
-            // if no userid, go get one
-            System.Collections.Hashtable arg_list = util.ParseUrlPattern(this.Context.Request.RawUrl, this.UrlPattern);
-            if (!arg_list.Contains("uid"))
+            // no cookie or wrong cookie, throw error
+            string uid = util.CookieRead(CBData.CodeKeyID);
+            if (uid.Length == 0 || uid != ArgumentList["uid"].ToString())
             {
-                this.Context.Response.Redirect(util.GetConfigSectionItem(Constants.cfg_exyusSettings, Constants.cfg_rootfolder) + "/codebreaker/");
+                throw new HttpException(403, "access denied");
             }
+            
             base.Post();
         }
+    }
+
+    // source code viewer
+    [UriPattern(@"/codebreaker/source/\.xcs")]
+    [MediaTypes("text/html")]
+    class CodeBreakerSource : PlainTextViewer
+    {
+        public CodeBreakerSource()
+        {
+            this.MaxAge = 600;
+            this.UseValidationCaching = true;
+
+            this.Files.Add("codebreaker.cs", "/xcs/documents/codebreaker/source/codebreaker.cs");
+            this.Files.Add("codebreaker.sql", "/xcs/documents/codebreaker/source/codebreaker.sql");
+            this.Files.Add("get_request_html.xsl", "/xcs/documents/codebreaker/get_request_html.xsl");
+            this.Files.Add("get_response_html.xsl", "/xcs/documents/codebreaker/get_response_html.xsl");
+            this.Files.Add("games/get_response_html.xsl", "/xcs/documents/codebreaker/games/get_response_html.xsl");
+            this.Files.Add("games/get_request_html.xsl", "/xcs/documents/codebreaker/games/get_request_html.xsl");
+            this.Files.Add("games/post_request_form.xsl", "/xcs/documents/codebreaker/games/post_request_form.xsl");
+            this.Files.Add("moves/get_response_html.xsl", "/xcs/documents/codebreaker/moves/get_response_html.xsl");
+            this.Files.Add("moves/get_request_html.xsl", "/xcs/documents/codebreaker/moves/get_request_html.xsl");
+            this.Files.Add("moves/post_request_form.xsl", "/xcs/documents/codebreaker/moves/post_request_form.xsl");
+            this.Files.Add("moves/post_form.xsd", "/xcs/documents/codebreaker/moves/post_form.xsd");
+        }
+    }
+
+    // shared data
+    class CBData
+    {
+        public static string CodeKeyID = "codebreaker-id";
     }
 
     // generate a new answer set
