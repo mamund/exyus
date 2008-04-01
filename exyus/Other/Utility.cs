@@ -442,8 +442,22 @@ namespace Exyus
             string mtype = mp.GetBestFit(mediaTypes, rs.ContentType);
             if (mtype == string.Empty)
             {
-                rs.Context.Response.AppendHeader("X-Acceptable", rs.AllowedMediaTypes);
-                throw new HttpException((int)HttpStatusCode.NotAcceptable, HttpStatusCode.NotAcceptable.ToString());
+                switch (rs.Context.Request.HttpMethod.ToLower())
+                {
+                    case "delete":
+                    case "post":
+                    case "put":
+                        rs.Context.Response.AppendHeader("X-Content-Types", rs.AllowedMediaTypes);
+                        throw new HttpException((int)HttpStatusCode.UnsupportedMediaType, HttpStatusCode.UnsupportedMediaType.ToString());
+                        break;
+                    case "get":
+                    case "head":
+                    case "options":
+                    default:
+                        rs.Context.Response.AppendHeader("X-Accept-Types", rs.AllowedMediaTypes);
+                        throw new HttpException((int)HttpStatusCode.NotAcceptable, HttpStatusCode.NotAcceptable.ToString());
+                        break;
+                }
             }
             else
             {
