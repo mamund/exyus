@@ -205,6 +205,18 @@ namespace Exyus.Samples.CodeBreak
         }
     }
 
+    // about page
+    [UriPattern(@"/codebreaker/about/\.xcs")]
+    [MediaTypes("text/html")]
+    class CodeBreakerAbout : XmlPageResource
+    {
+        public CodeBreakerAbout()
+        {
+            this.ContentType = "text/html";
+            this.LocalMaxAge = 600;
+            this.TemplateXsl = "~/documents/codebreaker/about/about_{ftype}.xsl";
+        }
+    }
     // source code viewer
     [UriPattern(@"/codebreaker/source/\.xcs")]
     [MediaTypes("text/html")]
@@ -217,8 +229,11 @@ namespace Exyus.Samples.CodeBreak
 
             this.Files.Add("codebreaker.cs", "/xcs/documents/codebreaker/source/codebreaker.cs");
             this.Files.Add("codebreaker.sql", "/xcs/documents/codebreaker/source/codebreaker.sql");
+            this.Files.Add("codebreaker.css", "/xcs/files/codebreaker/codebreaker.css");
             this.Files.Add("get_request_html.xsl", "/xcs/documents/codebreaker/get_request_html.xsl");
             this.Files.Add("get_response_html.xsl", "/xcs/documents/codebreaker/get_response_html.xsl");
+            this.Files.Add("content.xsl", "/xcs/documents/codebreaker/content.xsl");
+            this.Files.Add("about/about_html.xsl", "/xcs/documents/codebreaker/about/about_html.xsl");
             this.Files.Add("games/get_response_html.xsl", "/xcs/documents/codebreaker/games/get_response_html.xsl");
             this.Files.Add("games/get_request_html.xsl", "/xcs/documents/codebreaker/games/get_request_html.xsl");
             this.Files.Add("games/post_request_form.xsl", "/xcs/documents/codebreaker/games/post_request_form.xsl");
