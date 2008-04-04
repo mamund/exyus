@@ -186,6 +186,7 @@ namespace Exyus.Web
         {
             Utility util = new Utility();
             HTTPClient cl = new HTTPClient();
+            cl.UserAgent = Constants.msc_exyus_cachebot;
 
             if (this.NoCache == true)
             {
