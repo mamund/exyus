@@ -240,6 +240,7 @@ namespace Exyus.Web
                     if (File.Exists(xsl_file))
                     {
                         xslt = new XslTransformer();
+
                         out_text = xslt.ExecuteText(xmlout, xsl_file, ArgumentList);
                     }
                     else
