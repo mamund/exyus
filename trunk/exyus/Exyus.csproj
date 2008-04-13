@@ -76,6 +76,7 @@
     <Compile Include="Other\Utility.cs" />
     <Compile Include="Xml\XHtmlValidator.cs" />
     <Compile Include="Xml\XmlFileReader.cs" />
+    <Compile Include="Xml\XsltFunctions.cs" />
     <Compile Include="Xml\XslTransformer.cs" />
   </ItemGroup>
   <ItemGroup>

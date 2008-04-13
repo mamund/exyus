@@ -314,7 +314,7 @@ namespace Exyus.Caching
             string cdate = (ctx.Request.Headers[Constants.hdr_if_modified_since]!=null?ctx.Request.Headers[Constants.hdr_if_modified_since]:string.Empty);
             if (cdate != string.Empty)
             {
-              cdate = (cdate.IndexOf(";") != 0?cdate.Substring(0, cdate.IndexOf(";") - 1):string.Empty);
+              cdate = (cdate.IndexOf(";") != -1?cdate.Substring(0, cdate.IndexOf(";") - 1):string.Empty);
               DateTime mdate = DateTime.UtcNow;
               bool isdate = DateTime.TryParse(cdate, out mdate);
               mdate = (isdate?DateTime.Parse(cdate).AddHours(4) : DateTime.UtcNow);

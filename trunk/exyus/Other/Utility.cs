@@ -962,6 +962,9 @@ namespace Exyus
                 xargs.AddParam(en.Key.ToString(), "", en.Value.ToString());
             }
 
+            // handle extention objects
+            //xargs.AddExtensionObject("urn:exyus-functions", new XsltFunctions());
+
             return xargs;
         }
 
@@ -1259,7 +1262,7 @@ namespace Exyus
                 return rtn;
         }
 
-        private string SHA1(string data)
+        public string SHA1(string data)
         {
             string rtn = string.Empty;
             SHA1 md = new SHA1CryptoServiceProvider();
