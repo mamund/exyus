@@ -82,7 +82,7 @@ namespace Exyus.Web
 
                 // validate args before continuing
                 xsd_file = string.Empty;
-                xsd_file = (XsdFileMtype != string.Empty ? XsdFileMtype : XsdFile);
+                xsd_file = (File.Exists(XsdFileMtype) ? XsdFileMtype : XsdFile);
                 if (File.Exists(xsd_file))
                 {
                     SchemaValidator sv = new SchemaValidator();
@@ -219,7 +219,8 @@ namespace Exyus.Web
                 }
 
                 // transform args into sql and execute
-                xsl_file = (xslGetRequestContentType!=string.Empty?xslGetRequestContentType : xslGetRequest);
+                xsl_file = string.Empty;
+                xsl_file = (File.Exists(xslGetRequestContentType) ? xslGetRequestContentType : xslGetRequest);
                 if (File.Exists(xsl_file))
                 {
                     xslt = new XslTransformer();
@@ -236,12 +237,12 @@ namespace Exyus.Web
                     }
 
                     // transform outputs into representation
-                    xsl_file = (xslGetResponseContentType!=string.Empty?xslGetResponseContentType:xslGetResponse);
+                    xsl_file = (File.Exists(xslGetResponseContentType) ? xslGetResponseContentType : xslGetResponse);
                     if (File.Exists(xsl_file))
                     {
                         xslt = new XslTransformer();
 
-                        out_text = xslt.ExecuteText(xmlout, xsl_file, ArgumentList);
+                        out_text = util.FixEncoding(xslt.ExecuteText(xmlout, xsl_file, ArgumentList));
                     }
                     else
                     {
@@ -366,7 +367,7 @@ namespace Exyus.Web
 
                 // transform xmldoc into sql command
                 xsl_file = string.Empty;
-                xsl_file = (xslGetRequestContentType != string.Empty ? xslGetRequestContentType : xslGetRequest);
+                xsl_file = (File.Exists(xslGetRequestContentType) ? xslGetRequestContentType : xslGetRequest);
                 if (File.Exists(xsl_file))
                 {
                     xslt = new XslTransformer();
@@ -387,11 +388,11 @@ namespace Exyus.Web
 
                     // transform outputs into representation
                     xsl_file = string.Empty;
-                    xsl_file = (xslGetResponseContentType != string.Empty ? xslGetResponseContentType : xslGetResponse);
+                    xsl_file = (File.Exists(xslGetResponseContentType) ? xslGetResponseContentType : xslGetResponse);
                     if (File.Exists(xsl_file))
                     {
                         xslt = new XslTransformer();
-                        out_text = xslt.ExecuteText(xmlout, xsl_file, ArgumentList);
+                        out_text = util.FixEncoding(xslt.ExecuteText(xmlout, xsl_file, ArgumentList));
                     }
                     else
                     {
@@ -524,7 +525,7 @@ namespace Exyus.Web
 
                 // validate the doc
                 xsd_file = string.Empty;
-                xsd_file = (XsdFileMtype != string.Empty ? XsdFileMtype : XsdFile);
+                xsd_file = (File.Exists(XsdFileMtype) ? XsdFileMtype : XsdFile);
                 if (File.Exists(xsd_file))
                 {
                     SchemaValidator sv = new SchemaValidator();
@@ -618,11 +619,11 @@ namespace Exyus.Web
 
                         // transform outputs into representation
                         xsl_file = string.Empty;
-                        xsl_file = (xslPutResponseContentType != string.Empty ? xslPutResponseContentType : xslPutResponse);
+                        xsl_file = (File.Exists(xslPutResponseContentType) ? xslPutResponseContentType : xslPutResponse);
                         if (File.Exists(xsl_file))
                         {
                             xslt = new XslTransformer();
-                            out_text = xslt.ExecuteText(xmlout, xsl_file, ArgumentList);
+                            out_text = util.FixEncoding(xslt.ExecuteText(xmlout, xsl_file, ArgumentList));
                         }
                         else
                         {

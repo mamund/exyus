@@ -7,7 +7,7 @@ namespace Exyus.Samples.CodeBreak
 {
   // landing page for the game site
   [UriPattern(@"/codebreaker/\.xcs")]
-  [MediaTypes("text/html")]
+  [MediaTypes("text/html","text/xml")]
   class CodeBreaker : XmlSqlResource
   {
     Utility util = new Utility();
@@ -42,7 +42,7 @@ namespace Exyus.Samples.CodeBreak
 
   // temp location in case current user has no cookie id or no user folder
   [UriPattern(@"/codebreaker/games/\.xcs")]
-  [MediaTypes("text/html")]
+  [MediaTypes("text/html","text/xml")]
   class Games : HTTPResource
   {
     Utility util = new Utility();
@@ -71,7 +71,7 @@ namespace Exyus.Samples.CodeBreak
 
   // actual game resource - note the <uid>
   [UriPattern(@"/codebreaker/(?<uid>.*)/games/(?<id>[0-9]*)?\.xcs")]
-  [MediaTypes("text/html")]
+  [MediaTypes("text/html","text/xml")]
   class GameResource : XmlSqlResource
   {
     Utility util = new Utility();
@@ -88,7 +88,11 @@ namespace Exyus.Samples.CodeBreak
       this.UseValidationCaching = true;
       this.LocalMaxAge = 600;
       this.PostLocationUri = "/codebreaker/{uid}/games/{id}";
-      this.UpdateMediaTypes = new string[] { "application/x-www-form-urlencoded" };
+      this.UpdateMediaTypes = new string[] 
+        { 
+          "application/x-www-form-urlencoded",
+          "text/xml"
+        };
 
       this.ImmediateCacheUriTemplates = new string[]
         {
@@ -144,7 +148,7 @@ namespace Exyus.Samples.CodeBreak
 
   // handle moves (plays) in the game - note the <gid>
   [UriPattern(@"/codebreaker/(?<uid>.*)/games/(?<gid>[0-9]*)/moves/(?<id>[0-9]*)?\.xcs")]
-  [MediaTypes("text/html")]
+  [MediaTypes("text/html","text/xml")]
   class Moves : XmlSqlResource
   {
     Utility util = new Utility();
@@ -160,7 +164,11 @@ namespace Exyus.Samples.CodeBreak
       this.UseValidationCaching = true;
       this.LocalMaxAge = 600;
       this.PostLocationUri = "/codebreaker/{uid}/games/{gid}";
-      this.UpdateMediaTypes = new string[] { "application/x-www-form-urlencoded" };
+      this.UpdateMediaTypes = new string[] 
+        { 
+          "application/x-www-form-urlencoded",
+          "text/xml"
+        };
 
       this.ImmediateCacheUriTemplates = new string[]
           {
@@ -210,7 +218,7 @@ namespace Exyus.Samples.CodeBreak
   // handle display of players
   // noe4 that no cookie is needed here
   [UriPattern(@"/codebreaker/players/(?<id>[\w-]*)\.xcs")]
-  [MediaTypes("text/html")]
+  [MediaTypes("text/html","text/xml")]
   class Players : XmlSqlResource
   {
     public Players()
@@ -235,7 +243,7 @@ namespace Exyus.Samples.CodeBreak
 
   // handle redirect for proper POSTing of player name
   [UriPattern(@"/codebreaker/name/.xcs")]
-  [MediaTypes("text/html")]
+  [MediaTypes("text/html","text/xml")]
   class NameRoot : HTTPResource
   {
     Utility util = new Utility();
@@ -265,7 +273,7 @@ namespace Exyus.Samples.CodeBreak
   // handle POSTing of name for a user
   // requires the cookie is set properly
   [UriPattern(@"/codebreaker/(?<uid>.*)/name/(?<id>[\w]*)\.xcs")]
-  [MediaTypes("text/html")]
+  [MediaTypes("text/html","text/xml")]
   class Names : XmlSqlResource
   {
     Utility util = new Utility();
@@ -281,7 +289,11 @@ namespace Exyus.Samples.CodeBreak
       this.UseValidationCaching = true;
       this.LocalMaxAge = 600;
       this.PostLocationUri = "/codebreaker/players/{id}";
-      this.UpdateMediaTypes = new string[] { "application/x-www-form-urlencoded" };
+      this.UpdateMediaTypes = new string[] 
+        { 
+          "application/x-www-form-urlencoded",
+          "text/xml"
+        };
 
       this.ImmediateCacheUriTemplates = new string[]
       {
@@ -331,7 +343,7 @@ namespace Exyus.Samples.CodeBreak
 
   // about page
   [UriPattern(@"/codebreaker/about/\.xcs")]
-  [MediaTypes("text/html")]
+  [MediaTypes("text/html","text/xml")]
   class About : XmlPageResource
   {
     public About()
@@ -344,7 +356,7 @@ namespace Exyus.Samples.CodeBreak
 
   // feedback form page
   [UriPattern(@"/codebreaker/feedback/\.xcs")]
-  [MediaTypes("text/html")]
+  [MediaTypes("text/html","text/xml")]
   class Feedback : XmlPageResource
   {
     public Feedback()
@@ -357,7 +369,7 @@ namespace Exyus.Samples.CodeBreak
 
   // feedback (sendmail) page
   [UriPattern(@"/codebreaker/feedback/post\.xcs")]
-  [MediaTypes("text/html")]
+  [MediaTypes("text/html","text/xml")]
   class FeedbackPost : SMTPResource
   {
     public FeedbackPost()
@@ -371,14 +383,15 @@ namespace Exyus.Samples.CodeBreak
       this.XHtmlNodes = new string[] { "//body" };
       this.UpdateMediaTypes = new string[]
       {
-        "application/x-www-form-urlencoded"
+        "application/x-www-form-urlencoded",
+        "text/xml"
       };
     }
   }
 
   // feedback thankyou page
   [UriPattern(@"/codebreaker/feedback/thankyou\.xcs")]
-  [MediaTypes("text/html")]
+  [MediaTypes("text/html","text/xml")]
   class FeedbackThankyou :  XmlPageResource
   {
     public FeedbackThankyou()
