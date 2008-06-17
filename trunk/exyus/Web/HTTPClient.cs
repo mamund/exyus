@@ -24,6 +24,10 @@ namespace Exyus.Web
         public NetworkCredential Credentials = new NetworkCredential();
         public long ResponseLength = 0;
         public string UserAgent = string.Empty;
+        public bool PreAuthenticate = true;
+        public string Accept = "*/*";
+        public bool FollowRedirects = true;
+        public string HTTPVersion = "1.1";
 
         public HTTPClient() { }
         public HTTPClient(NetworkCredential credentials)
@@ -60,9 +64,9 @@ namespace Exyus.Web
                 req.UserAgent = (this.UserAgent.Length!=0?this.UserAgent:Constants.msc_exyus_agent);
                 req.Method = method.ToUpper();
                 req.ContentType = contentType;
-                req.Accept = contentType;
+                req.Accept = this.Accept;
                 req.ContentLength = body.Length;
-                req.PreAuthenticate = true;
+                req.PreAuthenticate = this.PreAuthenticate;
                 if (this.Credentials.UserName != string.Empty)
                     req.Credentials = this.Credentials;
 
@@ -94,13 +98,27 @@ namespace Exyus.Web
 
                 // set cookies
                 if (this.CookieCollection != null)
-                    req.CookieContainer = this.CookieCollection;
+                {
+                  req.CookieContainer = this.CookieCollection;
+                }
                 if (HttpContext.Current != null &&
                     HttpContext.Current.Request != null &&
                     HttpContext.Current.Request.Headers != null &&
                     HttpContext.Current.Request.Headers[Constants.hdr_cookie] != null
                     )
-                    req.CookieContainer.SetCookies(new Uri(url), HttpContext.Current.Request.Headers[Constants.hdr_cookie]);
+                {
+                  req.CookieContainer.SetCookies(new Uri(url), HttpContext.Current.Request.Headers[Constants.hdr_cookie]);
+                }
+
+                // set the version
+                if (this.HTTPVersion != string.Empty)
+                {
+                  req.ProtocolVersion = new Version(this.HTTPVersion);
+                }
+
+                // set flag for redirects
+                req.AllowAutoRedirect = this.FollowRedirects;
+
 
                 // set body
                 if (body != null && body.Trim() != string.Empty)
@@ -129,15 +147,30 @@ namespace Exyus.Web
                 foreach (Cookie ck in resp.Cookies)
                     this.CookieCollection.Add(ck);
 
-                // get body
-                if (resp.ContentLength != 0)
+                // get body (if one was passed
+                if (this.FollowRedirects == false && (int)this.ResponseStatusCode > 299)
                 {
+                  rtnBody = "";
+                }
+                else
+                {
+                  if (resp.ContentLength != 0)
+                  {
                     using (StreamReader sr = new StreamReader(resp.GetResponseStream()))
                     {
-                        rtnBody = sr.ReadToEnd();
-                        sr.Close();
+                      rtnBody = sr.ReadToEnd();
+                      sr.Close();
                     }
+                  }
                 }
+                //if (resp.ContentLength != 0)
+                //{
+                //    using (StreamReader sr = new StreamReader(resp.GetResponseStream()))
+                //    {
+                //        rtnBody = sr.ReadToEnd();
+                //        sr.Close();
+                //    }
+                //}
 
                 // clean up
                 if (resp != null)
