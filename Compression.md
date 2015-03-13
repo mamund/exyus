@@ -1,0 +1,1 @@
+Exyus offers automatic support for gzip and deflate compression via a pipeline HTTPModule. This is turned on by default, but can be turned off by commenting out the module reference in the [Web.config](WebConfig.md) file at the site root.
